@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Electricity & Water Usage</title>
-    <link rel="stylesheet" href="/src/output.css">
-    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen">
 
-<!-- Navbar -->
+<body class="bg-gray-100 text-black min-h-screen transition-all duration-300">
+
+<!-- Header Section -->
 <header class="bg-blue-600 text-white p-4 flex justify-between items-center shadow-md">
     <div class="flex items-center">
         <img src="logo.png" alt="Logo" class="h-10 w-10 mr-4">
+        
         <nav class="space-x-6">
             <a href="#" class="hover:underline">My usage</a>
             <a href="#" class="hover:underline">Add usage</a>
@@ -21,9 +22,45 @@
             <a href="#" class="hover:underline">Statistics</a>
         </nav>
     </div>
-    <div class="flex items-center space-x-4">
-        <img src="alert_img.png" alt="Profile" class="h-10 w-10 rounded-full  ">
-        <img src="profile.png" alt="Profile" class="h-10 w-10 rounded-full ">
+
+    <div class="relative">
+        <div class="flex items-center space-x-4">
+        <img src="alert_img.png" alt="Profile" class="h-10 w-10 rounded-full">
+        <img src="profile.png" alt="Profile" id="profileImage"
+             class="h-10 w-10 rounded-full  cursor-pointer" 
+             onclick="toggleSettingsMenu()">
+        </div>
+        <div id="themeButton" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg hidden z-20">
+            <button onclick="toggleThemeDropdown()" 
+            class=" w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">
+            Theme
+        </button>
+        </div>
+        <!-- Settings Dropdown -->
+        <div id="settingsDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg hidden z-10">
+            
+            
+            <button class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">Profile</button>
+            <button onclick="toggleSettings()" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">Setting</button>
+            <button class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">Help</button>
+            <button class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">Log out</button>
+        </div>
+
+        <!-- Theme Dropdown (Nested Inside Settings) -->
+        <div id="themeDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg hidden z-20">
+            <button onclick="setTheme('light')" 
+                class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">
+                Light Mode
+            </button>
+            <button onclick="setTheme('dark')" 
+                class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">
+                Dark Mode
+            </button>
+            <button onclick="systemTheme()" 
+                class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">
+                System Default
+            </button>
+        </div>
     </div>
 </header>
 
@@ -31,29 +68,30 @@
 <main class="p-8">
     <div class="grid grid-cols-2 gap-6">
         <!-- Electricity and Water Info -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="content-box bg-white p-6 rounded-lg shadow-md transition-all duration-300">
             <h2 class="text-lg font-semibold">Electricity Info (Today's Usage)</h2>
             <p class="text-gray-600 mt-2">Electricity (Available data)</p>
         </div>
 
-        <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="content-box bg-white p-6 rounded-lg shadow-md transition-all duration-300">
             <h2 class="text-lg font-semibold">Water Info (Today's Usage)</h2>
             <p class="text-gray-600 mt-2">Water Supply (Available data)</p>
         </div>
 
         <!-- Cost Analysis and Alert -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="content-box bg-white p-6 rounded-lg shadow-md transition-all duration-300">
             <h2 class="text-lg font-semibold">Cost Analysis</h2>
             <p class="text-gray-600 mt-2">Detailed cost breakdown here.</p>
         </div>
 
-        <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="content-box bg-white p-6 rounded-lg shadow-md transition-all duration-300">
             <h2 class="text-lg font-semibold">Alert</h2>
             <p class="text-gray-600 mt-2">Warning: Excessive usage detected!</p>
         </div>
     </div>
-    <!-- Week's Data -->
-    <div class="mt-8 bg-white p-8 rounded-lg shadow-md">
+
+    <!-- Week's Data Section -->
+    <div  class="content-box mt-8 bg-white p-8 rounded-lg shadow-md transition-all duration-300">
         <h2 class="text-xl font-bold mb-4">Week's Data</h2>
         <div class="flex space-x-4">
             <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Monthly</button>
@@ -68,5 +106,10 @@
     © 2025 Electricity & Water Usage Dashboard
 </footer>
 
+<!-- JavaScript -->
+<script src="dynamic.js"></script>
+
 </body>
 </html>
+
+
