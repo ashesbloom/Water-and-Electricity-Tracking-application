@@ -30,6 +30,7 @@ function toggleThemeDropdown() {
 function setTheme(mode) {
     const body = document.body;
     const contentBoxes = document.querySelectorAll('.content-box');
+    localStorage.setItem('theme',mode);
 
     if (mode === 'dark') {
         body.classList.add('bg-gray-900', 'text-white');
@@ -62,7 +63,20 @@ function systemTheme() {
 document.getElementById('themeButton').classList.add('hidden');
 document.getElementById('themeDropdown').classList.add('hidden');
 }
+// load theme from local storage
+function loadTheme() {
+    const theme = localStorage.getItem('theme');
+    if(theme) {
+        setTheme(theme);
+    }else {
+        systemTheme();
+    }
+    document.getElementById('themeButton').classList.add('hidden');
+    document.getElementById('themeDropdown').classList.add('hidden');
+}
 
+// assigning reference of loadTheme to onload event
+window.onload = loadTheme;
 
 // Close dropdowns when clicking outside
 window.onclick = function(event) {
