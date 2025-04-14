@@ -4,7 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electricity & Water Usage Dashboard</title>
+
+    <title>Electricity & Water Usage</title>
+    <!-- <link rel="stylesheet" href="/src/output.css"> -->
+
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Animated Gradient Background for Body */
@@ -240,11 +243,48 @@
 
 <body class="bg-gray-100 text-black min-h-screen transition-all duration-300 flex flex-col">
 
+
     <!-- Header Section -->
     <header class="bg-blue-600 text-white p-4 flex justify-between items-center shadow-md">
         <div class="flex items-center space-x-6">
             <!-- Logo with Animation -->
             <img src="logo.png" alt="Logo" class="h-10 w-10 mr-4 nav-item">
+=======
+<!-- Header Section -->
+<!-- <header class="bg-blue-600 text-white p-4 flex justify-between items-center shadow-md">
+    <div class="flex items-center">
+        <img src="logo.png" alt="Logo" class="h-10 w-10 mr-4">
+        <nav class="space-x-6">
+            <a href="#" class="hover:underline">My usage</a>
+            <a href="#" class="hover:underline">Add usage</a>
+            <a href="#" class="hover:underline">News</a>
+            <a href="#" class="hover:underline">Statistics</a>
+        </nav>
+    </div>
+
+    <div class="relative">
+        <div class="flex items-center space-x-4">
+        <img src="../asset/alert_img.png" alt="Profile" class="h-6 w-6 rounded-full invert ml-2">
+        <img src="profile.png" alt="Profile" id="profileImage"
+             class="h-10 w-10 rounded-full border-2 border-white cursor-pointer" 
+             onclick="toggleSettingsMenu()">
+        </div>
+        <div id="themeButton" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg hidden z-20">
+            <button onclick="toggleThemeDropdown()" 
+            class=" w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">
+            Theme
+        </button>
+        </div>
+        <!-- Settings Dropdown -->
+<!--         <div id="settingsDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg hidden z-10">
+            
+            
+            <button class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">Profile</button>
+            <button onclick="toggleSettings()" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">Setting</button>
+            <button class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">Help</button>
+            <button class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">Log out</button>
+        </div> --> -->
+
 
             <!-- Navigation Links with Dynamic Colors and Animation -->
             <nav class="flex space-x-6">
