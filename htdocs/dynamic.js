@@ -1,4 +1,4 @@
-// Toggle Settings Menu
+/* // Toggle Settings Menu
 function toggleSettings(){
     document.getElementById('themeButton').classList.toggle('hidden');
     document.getElementById('settingsDropdown').classList.toggle('hidden');
@@ -90,3 +90,27 @@ window.onclick = function(event) {
         themeDropdownContent.classList.add('hidden');
     }
 }
+    */
+   // Toggle the visibility of the dropdown menu with animation
+   document.getElementById('profileButton').addEventListener('click', function () {
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    dropdownMenu.classList.toggle('hidden');
+
+    // Add animation class to make the dropdown appear smoothly
+    if (!dropdownMenu.classList.contains('hidden')) {
+        setTimeout(() => dropdownMenu.classList.add('show'), 10); // Add "show" for animation
+    } else {
+        dropdownMenu.classList.remove('show'); // Remove "show" when hiding
+    }
+});
+
+// Close the dropdown menu when clicking outside of it
+window.addEventListener('click', function (event) {
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    const profileButton = document.getElementById('profileButton');
+
+    if (!dropdownMenu.contains(event.target) && event.target !== profileButton) {
+        dropdownMenu.classList.add('hidden');
+        dropdownMenu.classList.remove('show');
+    }
+});
