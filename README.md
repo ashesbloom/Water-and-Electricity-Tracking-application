@@ -1,118 +1,123 @@
-# Water and Electricity Tracking Application (GridSync)
+# GridSync
 
-A web application built with PHP, MySQL, JavaScript, and Tailwind CSS to help users track and visualize their water and electricity consumption.
+A web application for AI‑enhanced tracking of water (L) and electricity (kWh) usage. GridSync helps users log daily readings, visualize consumption patterns, and receive insights to optimize resource use.
 
-## Description
+## Table of Contents
+1. [Overview](#overview)
+2. [Core Features](#core-features)
+3. [Technology Stack](#technology-stack)
+4. [Project Structure](#project-structure)
+5. [Installation & Setup](#installation--setup)
+6. [Operational Guide](#operational-guide)
+7. [Future Enhancements](#future-enhancements)
+8. [Contribution Guidelines](#contribution-guidelines)
 
-GridSync allows users to register, log in, and input their daily or periodic water and electricity meter readings. The application provides a dashboard with visualizations, goal setting features, user profile management, and informational pages. It features a modern, themeable interface with various animations and interactive elements.
+## Overview
+GridSync unifies manual data entry with AI‑driven recommendations, promoting cost savings and sustainability through detailed consumption insights.
 
-## Features
+## Core Features
+- **Authentication:** Secure registration, login, hashed passwords, session management.  
+- **Usage Input:** Timestamped water and electricity readings via `add_usage.php`.  
+- **Dashboard:** Interactive charts (Chart.js) showing hourly/daily usage (`electTodayUse.php`, `waterTodayUse.php`).  
+- **Profile Management:** Username/password updates and avatar uploads (`profile.php` → `htdocs/asset/uploads/`).  
+- **AI Assistant:** Chat interface backed by Node.js for usage analysis (`chatbot.php`, `ai_backend/`).  
+- **Theming:** Light/dark mode toggle stored in `localStorage`.  
+- **3D Globe:** Placeholder Three.js visualization in `Statistics.php`.  
+- **MVC‑Style Backend:** Controllers in `src/controllers/` for maintainable code.
 
-* **User Authentication:** Secure Sign Up, Sign In, and Logout functionality using password hashing.
-* **Dashboard (`homepage.php`):**
-    * Displays current day's simulated electricity and water usage.
-    * Interactive goal setting for daily electricity and water usage (saved in localStorage).
-    * Visual progress tracking (doughnut chart for electricity goal, animated water level for water usage).
-    * Usage distribution bar chart (placeholder data).
-    * Historical usage line charts (placeholder data).
-    * Swipeable Alerts section (Usage Alerts, Service Alerts, Tips).
-* **Add Usage (`add_usage.php`):** Forms to submit new electricity and water readings with date and optional notes.
-* **Profile Management (`profile.php`):**
-    * View current profile information.
-    * Update username.
-    * Change password (requires current password verification).
-    * Upload and update profile picture (stored in `htdocs/asset/uploads/`).
-    * Accordion UI for settings sections.
-* **Statistics (`Statistics.php`):** Interactive 3D globe visualization displaying global usage data placeholders (using Three.js).
-* **Contact & Feedback (`contact.php`):** Dynamic form allowing users to switch between sending a contact message or submitting feedback.
-* **News Page (`news.php`):** Displays placeholder news articles in a responsive grid layout.
-* **Theming:** Light and Dark mode support, toggled via profile dropdown and saved using localStorage.
-* **Styling & Animation:**
-    * Styled using Tailwind CSS utility classes and custom CSS.
-    * Scroll-triggered animations for content sections.
-    * Animated hover effects on cards (including animated borders in dark mode).
-    * Animated footer graphic.
+## Technology Stack
+- **Backend (PHP):** PHP 8.x, PDO, MySQL/MariaDB, Composer (optional)  
+- **AI Backend:** Node.js 16+, Express, dotenv, OpenAI (or equivalent)  
+- **Frontend:** HTML5, Tailwind 3.x, Vanilla JS (ES6+), Chart.js, Three.js  
+- **Build Tools:** npm, Tailwind CLI  
+- **Server:** Apache/Nginx with URL rewriting
 
 ## Project Structure
 ```
-/Water-and-Electricity-Tracking-application
-├── /config
-│   ├── database.php     # Database connection setup
-│   └── schema.sql       # SQL schema for database tables (users, usage_readings)
-│
-├── /htdocs              # Web server document root
-│   ├── index.php        # Front Controller (handles routing)
-│   ├── /asset
-│   │   ├── logo.png     # Application logo
-│   │   └── /uploads/    # Directory for profile picture uploads
-│   ├── /JavaScripts
-│   │   ├── auth_script.js
-│   │   ├── chartsAndAnimations.js # Homepage charts & animations
-│   │   ├── contact_script.js    # JS for contact page form switching (if needed)
-│   │   ├── dynamic.js           # Theme toggle, dropdowns
-│   │   ├── partials_script.js   # Scroll animations, footer logic
-│   │   └── statistics_script.js # Three.js globe logic
-│   ├── /Styles
-│   │   ├── add_usage_styles.css
-│   │   ├── auth_styles.css      # Signin/Signup blob styles
-│   │   ├── homepage_styling.css # Card hover effects, etc.
-│   │   ├── partials_styling.css # Footer styles
-│   │   └── statistics_styles.css# Globe page styles
-│   └── /views
-│       ├── add_usage.php
-│       ├── contact.php
-│       ├── electTodayUse.php    # Placeholder detail page
-│       ├── homepage.php
-│       ├── news.php
-│       ├── profile.php
-│       ├── signin.php
-│       ├── signup.php
-│       ├── Statistics.php
-│       ├── waterTodayUse.php    # Placeholder detail page
-│       └── /partials
-│           └── footer.php       # Shared footer component
-│
-├── /src
-│   ├── /controllers
-│   │   ├── AuthController.php   # Handles auth & profile logic
-│   │   └── UsageController.php  # Handles saving usage data
-│   ├── input.css          # Tailwind source input
-│   └── output.css         # Tailwind compiled output
-│
-├── package.json         # NPM dependencies (Tailwind)
-├── package-lock.json    # NPM lock file
-├── tailwind.config.js   # Tailwind CSS configuration (if used)
-├── README.md            # This file
-└── # Other config files (postcss.config.js, etc.)
+. ├── ai_backend/ # Node.js AI chatbot service
+│ ├── server.js
+│ ├── package.json
+│ └── .env.example # env template for API keys & PORT
+├── config/ # Global configuration
+│ ├── database.php # PDO connection setup
+│ └── schema.sql # users & usage_records tables
+├── htdocs/ # Public web root
+│ ├── index.php # Front controller
+│ ├── asset/ # Static assets
+│ │ ├── logo.png
+│ │ └── uploads/ # User‐uploaded avatars
+│ ├── views/ # PHP templates
+│ │ ├── partials/ # headers, footers, etc.
+│ │ └── *.php # page‑specific files
+│ ├── js/ # Frontend scripts
+│ ├── css/ # Compiled CSS (Tailwind output)
+│ └── .htaccess # URL rewrite rules
+├── src/ # Application source (MVC)
+│ ├── controllers/ # Request handlers
+│ ├── models/ # Data layer (optional)
+│ ├── input.css # Tailwind source
+│ └── output.css # Tailwind build artifact
+├── vendor/ # Composer dependencies
+├── composer.json # PHP package manifest
+├── package.json # Node.js/Tailwind manifest
+└── README.md # Project documentation
 ```
-## Setup & Installation
 
-1.  **Clone Repository:** `git clone https://github.com/ashesbloom/Water-and-Electricity-Tracking-application.git`
-2.  **Database Setup:**
-    * Create a MySQL database (e.g., `project_db`).
-    * Import the table structure using the `config/schema.sql` file. Make sure to add the `usage_readings` table definition if it's not already in your schema file.
-    * Update the database credentials (`$dbName`, `$dbUser`, `$dbPass`) in `config/database.php` if they differ from the defaults (`project_db`, `root`, '').
-3.  **Web Server Configuration:**
-    * Set up a web server (like Apache via XAMPP, MAMP, or LAMP).
-    * Configure the server's document root to point to the `/htdocs` directory of the project.
-    * **Routing:** Configure URL rewriting (e.g., using Apache's `.htaccess` or virtual host settings) to direct all requests through `htdocs/index.php`. Ensure the `BASE_URL_PATH` constant defined in `htdocs/index.php` (e.g., `/tracker`) matches your server configuration (like an Apache Alias).
-4.  **Directory Permissions:** Ensure the `htdocs/asset/uploads/` directory exists and is writable by the web server process (e.g., `www-data`, `apache`) to allow profile picture uploads.
-5.  **Tailwind CSS (Optional):** If you modify `src/input.css` or Tailwind configuration, you may need to rebuild the `src/output.css` file. Install dependencies (`npm install`) and run the appropriate build command (e.g., `npx tailwindcss -i ./src/input.css -o ./src/output.css --watch`). The current `output.css` should work as is.
-6.  **Access:** Open your web browser and navigate to the URL configured in your web server (e.g., `http://localhost/tracker/`).
+# Installation & Setup
+### Clone and PHP backend
+```bash
+git clone https://github.com/your-username/gridsync.git
+cd gridsync
+composer install                     # if needed
+mysql -u user -p gridsync_db < config/schema.sql
+```
+### AI backend
+```bash
+cd ai_backend
+npm install
+cp .env.example .env                # configure API_KEY and PORT
+npm start
+```
+### Tailwind CSS (optional)
+```bash
+npm install                         # in project root
+npx tailwindcss -i ./src/input.css -o ./src/output.css --watch
+```
+### Permissions
+```bash
+chmod -R 755 htdocs/asset/uploads/
+```
+## Operational Guide
 
-## Technologies Used
+- **Register** at `/signup` and **Login** at `/signin`.
+- **Add Usage**: Use the *Add Usage* form to log daily usage readings.
+- **Dashboard**: Visit `/homepage` or *Statistics* for graphical usage data.
+- **Chatbot**: Chat with the AI via `/chatbot` for smart energy insights.
+- **Profile**: Update your user info on `/profile`.
+- **Theme**: Toggle light/dark mode from the header.
 
-* **Backend:** PHP
-* **Database:** MySQL (using PDO)
-* **Frontend:** HTML, Tailwind CSS, JavaScript
-* **Libraries:** Chart.js, Three.js
+---
 
-## To Do / Future Enhancements
+## Future Enhancements
 
-* Implement backend logic for the Contact/Feedback form submission.
-* Fetch real data for News, Statistics Globe, and historical charts.
-* Add detailed usage breakdown pages (`electTodayUse.php`, `waterTodayUse.php`).
-* Implement password recovery ("Forgot Password?").
-* Add more robust input validation and error handling.
-* Refine UI/UX and add more sophisticated animations/transitions.
-* Implement unit/integration tests.
+- Bind AI chatbot to actual usage data for tailored insights.
+- Implement backend logic for *Contact* and *Feedback* forms.
+- Fetch live news or updates from external APIs.
+- Replace placeholder globes with live energy or usage stats.
+- Build detailed usage breakdown and goal tracking pages.
+- Add password recovery via email or OTP.
+- Improve validation, error handling, and testing workflows.
+- Persist goal-setting data in the database for continuity.
+
+---
+
+## Contribution Guidelines
+
+We welcome contributions from the community!
+
+- Fork the repository.
+- Create a new feature branch.
+- Open a pull request describing your changes.
+- Report bugs or suggest features through the [issue tracker](../../issues).
+
+Thanks for helping us improve!
