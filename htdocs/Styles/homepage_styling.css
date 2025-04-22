@@ -1,0 +1,487 @@
+    :root {
+        /* Original mist colors */
+        --mist-color1: rgba(255, 105, 180, 0.1); /* Light Pink */
+        --mist-color2: rgba(100, 181, 246, 0.1); /* Light Blue */
+
+        /* Theme variables for easier access */
+        --light-bg: #F3F4F6;
+        --light-card: rgba(255, 255, 255, 0.5);
+        --light-text-primary: #1F2937;
+        --light-text-secondary: #4B5567;
+        --light-border: #D1D5DB;
+        --light-accent: #2563EB;
+        --light-accent-hover: #1D4ED8;
+        --light-accent-rgb: 37, 99, 235; /* RGB for rgba */
+
+        --dark-bg: #111827;
+        --dark-card: rgba(17, 24, 39, 0.8);
+        --dark-text-primary: #F9FAFB;
+        --dark-text-secondary: #9CA3AF;
+        --dark-border: #4B5563;
+        --gold-accent: #ecc931;
+        --dark-accent: #ecc931; /* Alias for consistency */
+        --dark-accent-hover: #ca8a04;
+        --dark-accent-rgb: 236, 201, 49; /* RGB for rgba */
+    }
+
+    .dark {
+        --mist-color1: rgba(236, 202, 49, 0.1);  /* Dark Gold */
+        --mist-color2: rgba(85, 239, 196, 0.15); /* Dark Teal */
+    }
+
+    /* --- Base Styles --- */
+    .content-box,
+    .content-box-alert,
+    .content-box-glow { /* Renamed active class */
+        position: relative; /* Needed for pseudo-elements AND inner div */
+        z-index: 0; /* Stacking context */
+        overflow: hidden; /* Hide inner mist overflow */
+        /* NOTE: overflow:hidden clips the ::before glow. Consider alternative structure if full glow is needed. */
+
+        background: rgba(255, 255, 255, 0.65); /* Original Light mode background */
+        /* backdrop-filter: blur(12px); /* Optional: Can be performance heavy */
+        border-radius: 12px;
+        border: 1px solid rgba(229, 231, 235, 0.5); /* Light mode border */
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7); /* Light mode inner highlight */
+        padding: 1.5rem;
+        color: #1f2937; /* Light mode text */
+        transition: transform 0.2s ease, opacity 0.4s ease, background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Ensure content stays above pseudo-elements and mist */
+    .content-box > *:not(.mist-background),
+    .content-box-alert > *:not(.mist-background),
+    .content-box-glow > *:not(.mist-background) { /* Renamed active class */
+        position: relative;
+        z-index: 1;
+    }
+
+    /* --- Glow Pseudo-element (::before) --- */
+    /* (Outer glow behind the card) */
+    .content-box::before,
+    .content-box-alert::before,
+    .content-box-glow::before { /* Renamed active class */
+        content: "";
+        position: absolute;
+        z-index: -1;
+        top: -80px; left: -80px; right: -80px; bottom: -80px;
+        border-radius: inherit;
+        /* Light Mode Glow Colors */
+        background-image:
+            radial-gradient(ellipse 500px 250px at 50% 50%, rgba(255, 130, 170, 0.6) 0%, transparent 70%), /* Softer Pink */
+            radial-gradient(ellipse 450px 220px at 50% 50%, rgba(100, 181, 246, 0.7) 0%, transparent 70%); /* Blue */
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: 10% 10%; /* Initial state for animation */
+        filter: blur(83px); /* Original blur */
+        opacity: 0; /* Start hidden */
+        pointer-events: none;
+        /* Animation applied on hover or directly for active class */
+    }
+
+    /* --- Vignette Pseudo-element (::after) --- */
+    /* (Inner vignette on top of glass, below content) */
+    .content-box::after,
+    .content-box-alert::after,
+    .content-box-glow::after { /* Renamed active class */
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        z-index: 0; /* Above glass bg, below content */
+        pointer-events: none;
+        /* Light Mode Vignette */
+        background:
+            radial-gradient(circle at top left,      rgba(0,0,0,0.06) 0%, transparent 40%),
+            radial-gradient(circle at top right,     rgba(0,0,0,0.06) 0%, transparent 40%),
+            radial-gradient(circle at bottom left,   rgba(0,0,0,0.06) 0%, transparent 40%),
+            radial-gradient(circle at bottom right,  rgba(0,0,0,0.06) 0%, transparent 40%),
+            linear-gradient(to bottom, rgba(0,0,0,0.06) 0%, transparent 30%),
+            linear-gradient(to top,    rgba(0,0,0,0.06) 0%, transparent 30%);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+
+    /* --- Inner Mist Background Element --- */
+    .mist-background {
+        position: absolute;
+        inset: 0; /* Fill parent */
+        border-radius: inherit; /* Match parent rounding */
+        z-index: -1; /* Behind content, above main background */
+        pointer-events: none;
+        overflow: hidden; /* Clip gradients to the element */
+        /* Mist Gradients */
+        background-image:
+            radial-gradient(circle at 20% 80%, var(--mist-color1), transparent 45%), /* Pos 1 */
+            radial-gradient(circle at 75% 30%, var(--mist-color2), transparent 40%); /* Pos 2 */
+        background-size: 400% 400%;
+        background-repeat: no-repeat;
+        background-position: 0% 0%; /* Initial position */
+        opacity: 0; /* Start hidden */
+        transition: opacity 0.3s ease-in-out; /* Fade in/out */
+        /* Animation applied only on hover or directly for active class */
+    }
+
+
+    /* --- Dark Mode Styles --- */
+    .dark .content-box,
+    .dark .content-box-alert,
+    .dark .content-box-glow { /* Renamed active class */
+        background-color: rgba(31, 41, 55, 0.65);
+        border-color: rgba(75, 85, 99, 0.5); /* Dark mode border */
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1); /* Dark mode inner highlight */
+        color: #f3f4f6; /* Dark mode text */
+    }
+
+    /* Dark Mode ::before Glow Colors */
+    .dark .content-box::before,
+    .dark .content-box-alert::before,
+    .dark .content-box-glow::before { /* Renamed active class */
+        background-image:
+            radial-gradient(ellipse 500px 250px at 50% 50%, rgba(236, 202, 49, 0.2) 0%, transparent 70%), /* Gold */
+            radial-gradient(ellipse 450px 220px at 50% 50%, rgba(85, 239, 196, 0.6) 0%, transparent 70%);  /* Teal */
+    }
+
+    /* Vignette override for Dark Mode */
+    .dark .content-box::after,
+    .dark .content-box-alert::after,
+    .dark .content-box-glow::after { /* Renamed active class */
+        background:
+            radial-gradient(circle at top left,      rgba(255,255,255,0.04) 0%, transparent 40%),
+            radial-gradient(circle at top right,     rgba(255,255,255,0.04) 0%, transparent 40%),
+            radial-gradient(circle at bottom left,   rgba(255,255,255,0.04) 0%, transparent 40%),
+            radial-gradient(circle at bottom right,  rgba(255,255,255,0.04) 0%, transparent 40%),
+            linear-gradient(to bottom, rgba(255,255,255,0.04) 0%, transparent 30%),
+            linear-gradient(to top,    rgba(255,255,255,0.04) 0%, transparent 30%);
+    }
+
+
+    /* --- NEW: Always Active Styles for content-box-glow --- */
+
+    /* Light Mode Active State */
+    .content-box-glow { /* Renamed active class */
+        /* Apply the hover box-shadow directly */
+        box-shadow:
+            inset 0 0 0 1px rgba(255, 255, 255, 0.7), /* Inner */
+            0 0 12px 3px rgba(255, 130, 170, 0.6),    /* Softer Pink */
+            0 0 25px 8px rgba(100, 181, 246, 0.7),    /* Blue */
+            0 6px 15px rgba(0, 0, 0, 0.1);            /* Elevation */
+    }
+
+    /* Dark Mode Active State */
+    .dark .content-box-glow { /* Renamed active class */
+        /* Apply the dark hover box-shadow directly */
+        box-shadow:
+            inset 0 0 0 1px rgba(255, 255, 255, 0.1), /* Inner */
+            0 0 12px 3px rgba(236, 202, 49, 0.2),     /* Gold */
+            0 0 25px 8px rgba(85, 239, 196, 0.6),     /* Teal */
+            0 6px 15px rgba(248, 84, 84, 0.8);        /* Red */
+    }
+
+    /* Activate ::before glow animation */
+    .content-box-glow::before { /* Renamed active class */
+        animation: expandGlow 1s ease-out forwards;
+    }
+
+    /* Activate ::after vignette */
+    .content-box-glow::after { /* Renamed active class */
+        opacity: 1;
+    }
+
+    /* Activate mist animation */
+    .content-box-glow .mist-background { /* Renamed active class */
+        opacity: 1;
+        animation: mistAnimationCard 10s ease-in-out infinite alternate; /* Using shorter duration for always-on */
+    }
+
+    /* --- END NEW ACTIVE CLASS --- */
+
+
+    /* --- REMOVED Mobile Scroll-Triggered Hover Effects --- */
+    /* The .mobile-hover-active class and related styles have been removed. */
+
+
+    /* --- Original HOVER Effects (Modified and Wrapped) --- */
+
+    /* ALL SCREENS: Apply scaling transform ONLY on hover */
+    /* This rule applies the scaling effect when the element is actually hovered */
+    .content-box:hover {
+        transform: scale(1.03);
+        /* position: relative; z-index: 10; /* Optional: Bring hovered element to front */
+    }
+    /* Alert box does not scale on hover */
+    .content-box-alert:hover {
+        /* No transform: scale here */
+    }
+
+
+    /* DESKTOP ONLY: Apply non-scaling hover effects */
+    /* These effects are applied only when hovering on devices wider than 768px */
+    @media (min-width: 769px) {
+        /* Trigger ::before glow expansion and fade animation on hover */
+        .content-box:hover::before,
+        .content-box-alert:hover::before {
+            animation: expandGlow 1s ease-out forwards;
+        }
+
+        /* Fade-in ::after vignette on hover */
+        .content-box:hover::after,
+        .content-box-alert:hover::after {
+            opacity: 1;
+        }
+
+        /* Trigger Inner Mist on Hover */
+        .content-box:hover .mist-background,
+        .content-box-alert:hover .mist-background {
+            opacity: 1;
+            animation: mistAnimationCard 60s ease-in-out infinite alternate; /* Using longer duration for hover */
+        }
+
+        /* Apply opacity on hover */
+        .content-box:hover {
+            opacity: 1;
+        }
+        .content-box-alert:hover {
+            opacity: 1;
+        }
+
+        /* Outer box-shadow glow on hover - Light Mode */
+        html:not(.dark) .content-box:hover,
+        html:not(.dark) .content-box-alert:hover {
+            box-shadow:
+                inset 0 0 0 1px rgba(255, 255, 255, 0.7),
+                0 0 12px 3px rgba(255, 130, 170, 0.6),
+                0 0 25px 8px rgba(100, 181, 246, 0.7),
+                0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Outer box-shadow glow on hover - Dark Mode */
+        .dark .content-box:hover,
+        .dark .content-box-alert:hover {
+            box-shadow:
+                inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+                0 0 12px 3px rgba(236, 202, 49, 0.2),
+                0 0 25px 8px rgba(85, 239, 196, 0.6),
+                0 6px 15px rgba(248, 84, 84, 0.8);
+        }
+    }
+    /* --- END WRAP --- */
+
+
+    /* --- Animations - Keep original definitions --- */
+    @keyframes expandGlow {
+        from { background-size: 10% 10%; opacity: 1; }
+        to { background-size: 400% 400%; opacity: 0; }
+    }
+
+    @keyframes mistAnimationCard {
+        0% { background-position: 0% 0%; }
+        50% { background-position: 100% 100%; }
+        100% { background-position: 0% 0%; }
+    }
+
+/* --- Base Page Layout --- */
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    overflow-x: hidden;
+}
+.dark body {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+}
+
+/* --- Scroll animation styles --- */
+.scroll-animate-init {
+    opacity: 0;
+    transform: translateY(30px);
+    will-change: opacity, transform;
+}
+.scroll-animate-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+/* Staggering delays for scroll animations */
+.top-grid>.scroll-animate-stagger:nth-child(1) { transition-delay: 0s; }
+.top-grid>.scroll-animate-stagger:nth-child(2) { transition-delay: 0.1s; }
+.top-grid>.scroll-animate-stagger:nth-child(3) { transition-delay: 0.2s; }
+.top-grid>.scroll-animate-stagger:nth-child(4) { transition-delay: 0.3s; }
+
+/* --- Dropdown styles --- */
+.dropdown-menu {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+    pointer-events: none;
+}
+.dropdown-menu.show {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: auto;
+}
+
+/* --- Chart container --- */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+.chart-container-small {
+    position: relative;
+    height: 120px;
+    width: 120px;
+}
+.chart-container-small canvas {
+    transition: transform 0.3s ease;
+}
+.chart-container-large {
+    position: relative;
+    height: 200px;
+    width: 100%;
+}
+.chart-container-historical-water {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    flex-grow: 1;
+}
+
+
+/* --- Theme toggle dot --- */
+.theme-dot { box-shadow: 0 0 4px 1px rgba(34, 197, 94, 0.6); }
+.dark .theme-dot { box-shadow: 0 0 4px 1px rgba(255, 255, 255, 0.6); }
+
+/* --- Highlight value --- */
+.highlight-value { color: var(--light-accent); }
+.dark .highlight-value { color: var(--gold-accent); }
+
+/* --- Progress Bar Style --- */
+.progress-bar-inner {
+    transition: width 0.5s ease-out;
+}
+
+/* --- Styles for Horizontal Flowing Water --- */
+.water-container-horizontal {
+    position: relative;
+    width: 100%;
+    height: 6rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid #D1D5DB;
+}
+html.dark .water-container-horizontal {
+    border-color: #4B5563;
+}
+#waterLevelContainer {
+    height: 100%;
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    overflow: hidden;
+    transition: width 1.2s ease-in-out;
+    width: 0%;
+}
+@keyframes horizontal-flow {
+    from { transform: translateX(var(--wave-offset)); }
+    to { transform: translateX(calc(var(--wave-offset) - 50%)); }
+}
+.wave-layer {
+    position: absolute;
+    top: 0; left: 0;
+    width: 200%; height: 100%;
+    background-color: var(--light-accent, #2563EB);
+    animation: horizontal-flow var(--wave-duration) linear infinite;
+}
+.dark .wave-layer {
+    background-color: var(--gold-accent, #ecc931);
+}
+.wave-layer:nth-child(1) { opacity: 0.5; --wave-offset: 0%; --wave-duration: 8s; }
+.wave-layer:nth-child(2) { opacity: 0.6; --wave-offset: 25%; --wave-duration: 10s; }
+.wave-layer:nth-child(3) { opacity: 0.7; --wave-offset: 50%; --wave-duration: 13s; }
+
+#waterGoalProgressBarInner {
+    transition: width 0.6s ease-out;
+    will-change: width;
+}
+
+/* Styles for alert slider */
+.alert-slider-container { position: relative; overflow: hidden; }
+.alert-slides { display: flex; transition: transform 0.5s ease-in-out; }
+.alert-slide { min-width: 100%; flex-shrink: 0; box-sizing: border-box; }
+.alert-slider-container::-webkit-scrollbar { display: none; }
+.alert-slider-container { -ms-overflow-style: none; scrollbar-width: none; }
+.alert-item { padding: 0.5rem 0; border-bottom: 1px solid var(--light-border, #D1D5DB); display: flex; align-items: center; gap: 0.75rem; }
+.dark .alert-item { border-bottom-color: var(--dark-border, #4B5563); }
+.alert-item:last-child { border-bottom: none; padding-bottom: 0; }
+.alert-item:first-child { padding-top: 0; }
+.alert-icon-warning { color: #F59E0B; }
+.dark .alert-icon-warning { color: #FCD34D; }
+.alert-icon-info { color: #3B82F6; }
+.dark .alert-icon-info { color: #60A5FA; }
+.alert-icon-danger { color: #EF4444; }
+.dark .alert-icon-danger { color: #F87171; }
+.alert-icon-system { color: #6B7280; }
+.dark .alert-icon-system { color: #9CA3AF; }
+.alert-indicator { width: 0.5rem; height: 0.5rem; border-radius: 9999px; background-color: #D1D5DB; transition: background-color 0.3s ease; cursor: pointer; border: none; padding: 0; }
+.dark .alert-indicator { background-color: #4B5563; }
+.alert-indicator.active { background-color: #6B7280; }
+.dark .alert-indicator.active { background-color: #9CA3AF; }
+
+/* --- Download button --- */
+.download-button-container { padding: 0; margin: 0; box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; display: flex; justify-content: center; align-items: center; transform: scale(0.85); transform-origin: right center; }
+.download-button { background-color: transparent; border: 2px solid var(--light-accent, #2563EB); display: flex; align-items: center; border-radius: 50px; width: 160px; height: 55px; cursor: pointer; transition: all 0.4s ease; padding: 5px; position: relative; overflow: hidden; }
+.dark .download-button { border-color: var(--gold-accent, #ecc931); }
+.download-button .title { font-size: 17px; color: var(--light-text-primary); transition: all 0.4s ease; position: absolute; right: 18px; top: 50%; transform: translateY(-50%); text-align: center; pointer-events: none; }
+.dark .download-button .title { color: var(--dark-text-primary); }
+.download-button .circle { height: 45px; width: 45px; border-radius: 50%; background-color: var(--light-accent, #2563EB); display: flex; justify-content: center; align-items: center; transition: all 0.4s ease; position: relative; box-shadow: 0 0 0 0 rgba(var(--light-accent-rgb, 37, 99, 235), 0.7); overflow: hidden; pointer-events: none; }
+.dark .download-button .circle { background-color: var(--gold-accent, #ecc931); box-shadow: 0 0 0 0 rgba(var(--dark-accent-rgb, 236, 201, 49), 0.7); }
+.download-button .circle .icon { color: #fff; width: 25px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); transition: all 0.4s ease; }
+.dark .download-button .circle .icon { color: var(--dark-bg, #111827); }
+.download-button:hover { border-color: var(--light-accent-hover, #1D4ED8); background-color: rgba(0,0,0,0.03); }
+.dark .download-button:hover { border-color: var(--dark-accent-hover, #ca8a04); background-color: rgba(255,255,255,0.05); }
+.download-button:hover .circle { transform: scale(1.05); box-shadow: 0 0 0 8px rgba(var(--light-accent-rgb, 37, 99, 235), 0); }
+.dark .download-button:hover .circle { box-shadow: 0 0 0 8px rgba(var(--dark-accent-rgb, 236, 201, 49), 0); }
+.download-button:active { transform: scale(0.98) translateX(-2px); }
+.download-button:active .circle { transform: scale(0.95); }
+@keyframes pulse { 0% { scale: 1; box-shadow: 0 0 0 0 rgba(var(--light-accent-rgb, 37, 99, 235), 0.7); } 70% { scale: 1.05; box-shadow: 0 0 0 10px rgba(var(--light-accent-rgb, 37, 99, 235), 0); } 100% { scale: 1; box-shadow: 0 0 0 0 rgba(var(--light-accent-rgb, 37, 99, 235), 0); } }
+.dark @keyframes pulse { 0% { scale: 1; box-shadow: 0 0 0 0 rgba(var(--dark-accent-rgb, 236, 201, 49), 0.7); } 70% { scale: 1.05; box-shadow: 0 0 0 10px rgba(var(--dark-accent-rgb, 236, 201, 49), 0); } 100% { scale: 1; box-shadow: 0 0 0 0 rgba(var(--dark-accent-rgb, 236, 201, 49), 0); } }
+.download-button.clicked .circle { animation: pulse 0.6s ease-out forwards; }
+
+/* --- Ask AI Button Styles (uiverse) --- */
+.uiverse { --duration: 7s; --easing: linear; --c-color-1: rgba(255, 163, 26, 0.7); --c-color-2: #1a23ff; --c-color-3: #e21bda; --c-color-4: rgba(255, 232, 26, 0.7); --c-shadow: rgba(255, 223, 87, 0.5); --c-shadow-inset-top: rgba(255, 223, 52, 0.9); --c-shadow-inset-bottom: rgba(255, 250, 215, 0.8); --c-radial-inner: #ffd215; --c-radial-outer: #fff172; --c-color: #fff; -webkit-tap-highlight-color: transparent; -webkit-appearance: none; outline: none; position: relative; cursor: pointer; border: none; display: table; border-radius: 24px; padding: 0; margin: 0; text-align: center; font-weight: 600; font-size: 16px; letter-spacing: 0.02em; line-height: 1.5; color: var(--c-color); background: radial-gradient( circle, var(--c-radial-inner), var(--c-radial-outer) 80% ); box-shadow: 0 0 14px var(--c-shadow); transform: scale(0.85); transform-origin: center center; }
+text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Adds a subtle shadow effect */
+-webkit-text-stroke: 1px rgba(255, 255, 255, 0.8); /* Adds a border around the text */ ;}
+.uiverse:before { content: ""; pointer-events: none; position: absolute; z-index: 3; left: 0; top: 0; right: 0; bottom: 0; border-radius: 24px; box-shadow: inset 0 3px 12px var(--c-shadow-inset-top), inset 0 -3px 4px var(--c-shadow-inset-bottom); }
+.uiverse .wrapper { -webkit-mask-image: -webkit-radial-gradient(white, black); overflow: hidden; border-radius: 24px; min-width: 132px; padding: 12px 0; }
+.uiverse .wrapper span { display: inline-block; position: relative; z-index: 1; }
+.uiverse:hover { --duration: 1400ms; }
+.uiverse .wrapper .circle { position: absolute; left: 0; top: 0; width: 40px; height: 40px; border-radius: 50%; filter: blur(var(--blur, 8px)); background: var(--background, transparent); transform: translate(var(--x, 0), var(--y, 0)) translateZ(0); animation: var(--animation, none) var(--duration) var(--easing) infinite; }
+.uiverse .wrapper .circle.circle-1, .uiverse .wrapper .circle.circle-9, .uiverse .wrapper .circle.circle-10 { --background: var(--c-color-4); }
+.uiverse .wrapper .circle.circle-3, .uiverse .wrapper .circle.circle-4 { --background: var(--c-color-2); --blur: 14px; }
+.uiverse .wrapper .circle.circle-5, .uiverse .wrapper .circle.circle-6 { --background: var(--c-color-3); --blur: 16px; }
+.uiverse .wrapper .circle.circle-2, .uiverse .wrapper .circle.circle-7, .uiverse .wrapper .circle.circle-8, .uiverse .wrapper .circle.circle-11, .uiverse .wrapper .circle.circle-12 { --background: var(--c-color-1); --blur: 12px; }
+.uiverse .wrapper .circle.circle-1 { --x: 0; --y: -40px; --animation: circle-1; }
+.uiverse .wrapper .circle.circle-2 { --x: 92px; --y: 8px; --animation: circle-2; }
+.uiverse .wrapper .circle.circle-3 { --x: -12px; --y: -12px; --animation: circle-3; }
+.uiverse .wrapper .circle.circle-4 { --x: 80px; --y: -12px; --animation: circle-4; }
+.uiverse .wrapper .circle.circle-5 { --x: 12px; --y: -4px; --animation: circle-5; }
+.uiverse .wrapper .circle.circle-6 { --x: 56px; --y: 16px; --animation: circle-6; }
+.uiverse .wrapper .circle.circle-7 { --x: 8px; --y: 28px; --animation: circle-7; }
+.uiverse .wrapper .circle.circle-8 { --x: 28px; --y: -4px; --animation: circle-8; }
+.uiverse .wrapper .circle.circle-9 { --x: 20px; --y: -12px; --animation: circle-9; }
+.uiverse .wrapper .circle.circle-10 { --x: 64px; --y: 16px; --animation: circle-10; }
+.uiverse .wrapper .circle.circle-11 { --x: 4px; --y: 4px; --animation: circle-11; }
+.uiverse .wrapper .circle.circle-12 { --blur: 14px; --x: 52px; --y: 4px; --animation: circle-12; }
+@keyframes circle-1 { 33% { transform: translate(0px, 16px) translateZ(0); } 66% { transform: translate(12px, 64px) translateZ(0); } }
+@keyframes circle-2 { 33% { transform: translate(80px, -10px) translateZ(0); } 66% { transform: translate(72px, -48px) translateZ(0); } }
+@keyframes circle-3 { 33% { transform: translate(20px, 12px) translateZ(0); } 66% { transform: translate(12px, 4px) translateZ(0); } }
+@keyframes circle-4 { 33% { transform: translate(76px, -12px) translateZ(0); } 66% { transform: translate(112px, -8px) translateZ(0); } }
+@keyframes circle-5 { 33% { transform: translate(84px, 28px) translateZ(0); } 66% { transform: translate(40px, -32px) translateZ(0); } }
+@keyframes circle-6 { 33% { transform: translate(28px, -16px) translateZ(0); } 66% { transform: translate(76px, -56px) translateZ(0); } }
+@keyframes circle-7 { 33% { transform: translate(8px, 28px) translateZ(0); } 66% { transform: translate(20px, -60px) translateZ(0); } }
+@keyframes circle-8 { 33% { transform: translate(32px, -4px) translateZ(0); } 66% { transform: translate(56px, -20px) translateZ(0); } }
+@keyframes circle-9 { 33% { transform: translate(20px, -12px) translateZ(0); } 66% { transform: translate(80px, -8px) translateZ(0); } }
+@keyframes circle-10 { 33% { transform: translate(68px, 20px) translateZ(0); } 66% { transform: translate(100px, 28px) translateZ(0); } }
+@keyframes circle-11 { 33% { transform: translate(4px, 4px) translateZ(0); } 66% { transform: translate(68px, 20px) translateZ(0); } }
+@keyframes circle-12 { 33% { transform: translate(56px, 0px) translateZ(0); } 66% { transform: translate(60px, -32px) translateZ(0); } }
+/* --- End Ask AI Button Styles --- */
+

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>India Electricity Tariff Map</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        /* Basic body styling */
+        body {
+            font-family: sans-serif;
+            background-color: #F3F4F6; /* Light background */
+            color: #1F2937; /* Dark text */
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Container for the map section */
+        #map-section-container {
+            background-color: rgba(255, 255, 255, 0.8); /* White-ish background */
+            padding: 2rem;
+            margin-top: 1rem;
+            border-radius: 0.75rem; /* rounded-xl */
+            border: 1px solid rgba(229, 231, 235, 0.8); /* Light border */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07); /* Soft shadow */
+            width: 100%;
+            max-width: 900px; /* Max width for the section */
+            position: relative; /* For tooltip positioning */
+        }
+
+        #india-tariff-map-container {
+            width: 100%;
+            max-width: 800px; /* Limit map width */
+            margin: 0 auto; /* Center map */
+            position: relative; /* Context for tooltip */
+        }
+
+        #india-tariff-map svg {
+            display: block; /* Remove extra space below SVG */
+            width: 100%;
+            height: auto; /* Maintain aspect ratio */
+        }
+
+        /* Styling for map paths (states) */
+        .state {
+            stroke: #6b7280; /* Gray stroke */
+            stroke-width: 0.5px;
+            transition: fill 0.2s ease-in-out, transform 0.1s ease-out, filter 0.2s ease;
+            cursor: pointer;
+        }
+
+        .state:hover {
+            stroke-width: 1.5px;
+            stroke: #1f2937; /* Darker stroke on hover */
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+
+        /* Tooltip Styling */
+        #tooltip {
+            position: absolute;
+            background-color: rgba(31, 41, 55, 0.95); /* Dark background */
+            color: #f9fafb; /* Light text */
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem; /* Slightly larger */
+            pointer-events: none; /* Don't block mouse events */
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+            white-space: nowrap;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+        #tooltip.visible {
+            opacity: 1;
+        }
+
+        /* Legend Styling */
+        #map-legend {
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            text-align: center;
+            color: #4B5567; /* text-secondary */
+        }
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            margin: 0 10px;
+        }
+        .legend-color-box {
+            width: 15px;
+            height: 15px;
+            margin-right: 5px;
+            border: 1px solid rgba(0,0,0,0.2);
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1 class="text-2xl font-bold text-center mb-4">India: Average Electricity Tariff by State</h1>
+
+    <section id="map-section-container">
+         <h2 class="text-lg font-semibold text-center mb-6">Average Tariff (INR/kWh)</h2>
+         <div id="india-tariff-map-container">
+              <div id="india-tariff-map">
+                  <svg width="800" height="700"></svg> </div>
+               <div id="tooltip">Tooltip</div>
+              <div id="map-legend">
+                   </div>
+         </div>
+         <p class="text-xs text-center mt-4 text-gray-500 italic">
+             Source: Representative data. Hover over states for details.
+         </p>
+    </section>
+
+    <script>
+        // Wait for the DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Tariff Data (from user) ---
+            // Added estimated data for J&K and NCT of Delhi
+            const tariffData = [
+                { state: "Andhra Pradesh", average_tariff_inr_per_kwh: 7.30 },
+                { state: "Arunachal Pradesh", average_tariff_inr_per_kwh: 4.50 },
+                { state: "Assam", average_tariff_inr_per_kwh: 6.75 },
+                { state: "Bihar", average_tariff_inr_per_kwh: 6.15 },
+                { state: "Chhattisgarh", average_tariff_inr_per_kwh: 5.90 },
+                { state: "Goa", average_tariff_inr_per_kwh: 4.10 },
+                { state: "Gujarat", average_tariff_inr_per_kwh: 6.25 },
+                { state: "Haryana", average_tariff_inr_per_kwh: 6.50 },
+                { state: "Himachal Pradesh", average_tariff_inr_per_kwh: 4.75 },
+                { state: "Jharkhand", average_tariff_inr_per_kwh: 6.00 },
+                { state: "Jammu and Kashmir", average_tariff_inr_per_kwh: 5.50 }, // <-- ADDED ESTIMATE
+                { state: "Karnataka", average_tariff_inr_per_kwh: 7.00 },
+                { state: "Kerala", average_tariff_inr_per_kwh: 7.50 },
+                { state: "Madhya Pradesh", average_tariff_inr_per_kwh: 6.80 },
+                { state: "Maharashtra", average_tariff_inr_per_kwh: 8.80 },
+                { state: "Manipur", average_tariff_inr_per_kwh: 5.00 },
+                { state: "Meghalaya", average_tariff_inr_per_kwh: 5.20 },
+                { state: "Mizoram", average_tariff_inr_per_kwh: 5.10 },
+                { state: "Delhi", average_tariff_inr_per_kwh: 7.00 }, 
+                { state: "Nagaland", average_tariff_inr_per_kwh: 4.80 },
+                { state: "Orissa", average_tariff_inr_per_kwh: 5.85 },
+                { state: "Punjab", average_tariff_inr_per_kwh: 5.60 },
+                { state: "Rajasthan", average_tariff_inr_per_kwh: 6.40 },
+                { state: "Sikkim", average_tariff_inr_per_kwh: 4.90 },
+                { state: "Tamil Nadu", average_tariff_inr_per_kwh: 6.75 },
+                { state: "Telangana", average_tariff_inr_per_kwh: 7.10 },
+                { state: "Tripura", average_tariff_inr_per_kwh: 5.00 },
+                { state: "Uttar Pradesh", average_tariff_inr_per_kwh: 6.90 },
+                { state: "Uttaranchal", average_tariff_inr_per_kwh: 5.30 },
+                { state: "West Bengal", average_tariff_inr_per_kwh: 8.00 },
+            ];
+
+            // Create a Map for quick lookup
+            const tariffDataMap = new Map(tariffData.map(d => [d.state, d.average_tariff_inr_per_kwh]));
+
+            // --- D3 Map Setup ---
+            const mapContainer = d3.select("#india-tariff-map");
+            const svg = mapContainer.select("svg");
+            const tooltip = d3.select("#tooltip");
+            const legendContainer = d3.select("#map-legend");
+
+            // Use container width for responsiveness
+            const containerWidth = mapContainer.node().getBoundingClientRect().width;
+            const width = containerWidth;
+            const height = width * 0.9;
+            svg.attr("viewBox", `0 0 ${width} ${height}`)
+               .attr("preserveAspectRatio", "xMidYMid meet")
+               .attr("width", "100%")
+               .attr("height", height);
+
+            // Define color scale
+            const colorRange = ["#ccebc5", "#a8ddb5", "#7bccc4", "#4eb3d3", "#2b8cbe", "#0868ac", "#084081"];
+            const colorScale = d3.scaleQuantize().domain([4, 9]).range(colorRange).unknown("#ccc");
+
+            // Define projection
+            const projection = d3.geoMercator().center([82, 22]).scale(width * 1.25).translate([width / 2, height / 2]);
+            const path = d3.geoPath().projection(projection);
+
+            // --- Map URL (GeoJSON) ---
+            const mapUrl = "https://raw.githubusercontent.com/geohacker/india/master/state/india_state.geojson";
+            // ---
+
+            // Load GeoJSON data
+            d3.json(mapUrl).then(indiaData => {
+                console.log("Map data loaded:", indiaData); // Check console for loaded data structure
+
+                // Use GeoJSON features directly
+                const states = indiaData.features;
+
+                console.log("Parsed states features:", states); // Check console for parsed features
+
+                if (!states || states.length === 0) {
+                    throw new Error("No state features found in the loaded GeoJSON data.");
+                }
+
+                // Draw the states
+                svg.append("g")
+                    .selectAll(".state")
+                    .data(states)
+                    .join("path")
+                    .attr("class", "state")
+                    .attr("d", path)
+                    .attr("fill", d => {
+                        // Use the CORRECT property name 'NAME_1'
+                        const stateName = d.properties.NAME_1;
+
+                        if (!stateName) {
+                             console.warn("State feature missing expected name property ('NAME_1'):", d.properties);
+                        }
+                        const tariff = tariffDataMap.get(stateName);
+                        return colorScale(tariff);
+                    })
+                    .on("mouseover", function(event, d) {
+                        d3.select(this).raise();
+                        // Use the SAME property name here
+                        const stateName = d.properties.NAME_1;
+                        const tariff = tariffDataMap.get(stateName);
+                        const tariffText = tariff ? `₹${tariff.toFixed(2)} / kWh` : "No data";
+                        // Display 'NCT of Delhi' from map data, or 'Unknown' if name is missing
+                        tooltip.html(`<strong>${stateName || 'Unknown'}</strong><br>${tariffText}`)
+                               .classed('visible', true);
+                    })
+                    .on("mousemove", function(event) {
+                         const [mouseX, mouseY] = d3.pointer(event, mapContainer.node());
+                         tooltip.style("left", (mouseX + 15) + "px")
+                                .style("top", (mouseY - 30) + "px");
+                    })
+                    .on("mouseout", function() {
+                        tooltip.classed('visible', false);
+                    });
+
+                 // Add Legend (same as before)
+                 legendContainer.html('');
+                 const legendTitle = legendContainer.append("span").style("font-weight", "bold").style("margin-right", "10px").text("Tariff (₹/kWh):");
+                 const thresholds = colorScale.thresholds();
+                 const legendData = [colorScale.domain()[0], ...thresholds, colorScale.domain()[1]];
+                 colorRange.forEach((color, i) => {
+                     const lowerBound = legendData[i];
+                     const upperBound = legendData[i + 1];
+                     const rangeText = upperBound ? `${lowerBound.toFixed(1)} - ${upperBound.toFixed(1)}` : `> ${lowerBound.toFixed(1)}`;
+                     const legendItem = legendContainer.append("span").attr("class", "legend-item");
+                     legendItem.append("span").attr("class", "legend-color-box").style("background-color", color);
+                     legendItem.append("span").text(rangeText);
+                 });
+                 const legendUnknown = legendContainer.append("span").attr("class", "legend-item");
+                 legendUnknown.append("span").attr("class", "legend-color-box").style("background-color", colorScale.unknown());
+                 legendUnknown.append("span").text("No Data");
+
+
+            }).catch(error => {
+                console.error("Error loading or processing map data. Status:", error?.message || "Unknown fetch/parse error");
+                if (error) { console.error("Full error object:", error); }
+                mapContainer.html("<p style='color: red; text-align: center;'>Could not load map data. Check browser console (F12) Network tab for details on the 'india_state.geojson' request.</p>");
+            });
+
+        }); // End DOMContentLoaded
+    </script>
+
+</body>
+</html>

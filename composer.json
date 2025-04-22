@@ -1,0 +1,11 @@
+{
+    "require": {
+        "jcobhams/newsapi": "^1.0",
+        "google-gemini-php/client": "^1.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    }
+}

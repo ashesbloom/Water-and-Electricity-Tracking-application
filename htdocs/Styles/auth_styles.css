@@ -1,0 +1,260 @@
+/* Styles for Sign In / Sign Up Pages (Blob Design) */
+
+/* Theme Variables (Ensure these align with global Tailwind config) */
+:root {
+    --light-bg: #F9FAFB; /* gray-50 */
+    --light-card-bg: #FFFFFF; /* white */
+    --light-text-primary: #1F2937; /* gray-800 */
+    --light-text-secondary: #6B7280; /* gray-500 */
+    --light-border: #E5E7EB; /* gray-200 */
+    --light-input-bg: #F3F4F6; /* gray-100 */
+    --light-accent: #3B82F6; /* blue-500 */
+    --light-accent-hover: #2563EB; /* blue-600 */
+
+    --dark-bg: #111827; /* gray-900 */
+    --dark-card-bg: #1F2937; /* gray-800 */
+    --dark-text-primary: #F9FAFB; /* gray-50 */
+    --dark-text-secondary: #9CA3AF; /* gray-400 */
+    --dark-border: #374151; /* gray-700 */
+    --dark-input-bg: #374151; /* gray-700 */
+    --dark-accent: #ecc931; /* gold */
+    --dark-accent-hover: #ca8a04; /* darker gold */
+
+    /* Blob Colors */
+    --blob-color-1: #8B5CF6; /* violet-500 */
+    --blob-color-2: #EC4899; /* pink-500 */
+    --blob-color-3: #3B82F6; /* blue-500 */
+    --blob-color-4: #F59E0B; /* amber-500 */
+    --blob-color-5: #10B981; /* emerald-500 */
+    --blob-color-6: #6366F1; /* indigo-500 */
+}
+
+/* Base styles */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--light-bg);
+    color: var(--light-text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark body {
+    background-color: var(--dark-bg);
+    color: var(--dark-text-primary);
+}
+
+/* Main container */
+.auth-container {
+    border-radius: 1.5rem; /* rounded-3xl */
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    display: flex;
+    width: 100%;
+    max-width: 1024px; /* lg */
+    min-height: 600px; 
+    margin: 2rem auto; 
+    /* Added subtle border */
+    border: 1px solid var(--light-border);
+    transition: border-color 0.3s ease;
+}
+.dark .auth-container {
+    border-color: var(--dark-border);
+}
+
+
+/* Left Panel (Form) */
+.left-panel {
+    background-color: var(--light-card-bg);
+    padding: 3rem 2.5rem;
+    width: 100%; 
+    flex-basis: 100%;
+    md:flex-basis: 50%; /* Tailwind syntax for media query not valid in pure CSS */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+.dark .left-panel {
+    background-color: var(--dark-card-bg);
+}
+/* Media query for medium screens and up */
+@media (min-width: 768px) { 
+    .left-panel {
+        flex-basis: 50%;
+    }
+}
+
+
+/* Right Panel (Visual) */
+.right-panel {
+    position: relative;
+    width: 100%;
+    flex-basis: 100%;
+    md:flex-basis: 50%; /* Tailwind syntax */
+    overflow: hidden;
+    padding: 3rem 2.5rem;
+    display: none; /* Hidden on small screens by default */
+    md:flex; /* Tailwind syntax */
+    flex-direction: column;
+    justify-content: space-between;
+    color: white;
+}
+/* Media query for medium screens and up */
+@media (min-width: 768px) {
+    .right-panel {
+        display: flex;
+        flex-basis: 50%;
+    }
+}
+
+
+/* Animated Blobs */
+.blob-container {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    overflow: hidden;
+    z-index: 0;
+    border-radius: inherit; /* Inherit rounding from parent */
+}
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.6;
+    mix-blend-mode: screen; /* Consider 'multiply' or 'overlay' for different effects */
+    filter: blur(40px); /* Performance intensive */
+    will-change: transform; /* Hint for browser optimization */
+}
+.dark .blob {
+     mix-blend-mode: lighten; /* Adjust blend mode for dark theme */
+     opacity: 0.5;
+}
+.blob-1 { background: var(--blob-color-1); width: 300px; height: 300px; top: -5%; left: -10%; animation: moveBlob 20s infinite alternate ease-in-out; }
+.blob-2 { background: var(--blob-color-2); width: 250px; height: 250px; top: 10%; right: -15%; animation: moveBlob 25s infinite alternate-reverse ease-in-out 2s; }
+.blob-3 { background: var(--blob-color-3); width: 200px; height: 200px; bottom: 5%; left: 20%; animation: moveBlob 18s infinite alternate ease-in-out 1s; }
+.blob-4 { background: var(--blob-color-4); width: 350px; height: 350px; bottom: -10%; right: 5%; animation: moveBlob 22s infinite alternate-reverse ease-in-out 3s; }
+.blob-5 { background: var(--blob-color-5); width: 150px; height: 150px; bottom: 5%; right: 10%; animation: moveBlob 23s infinite alternate ease-in-out 0.5s; }
+.blob-6 { background: var(--blob-color-6); width: 180px; height: 180px; bottom: 15%; right: -5%; animation: moveBlob 19s infinite alternate-reverse ease-in-out 1.5s; }
+
+@keyframes moveBlob {
+    0% { transform: translate(0%, 0%) scale(1) rotate(0deg); }
+    25% { transform: translate(40%, -30%) scale(1.1) rotate(30deg); }
+    50% { transform: translate(-30%, 50%) scale(0.9) rotate(-20deg); }
+    75% { transform: translate(20%, -40%) scale(1.2) rotate(10deg); }
+    100% { transform: translate(0%, 0%) scale(1) rotate(0deg); }
+}
+
+/* Blur Overlay */
+.blur-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    backdrop-filter: blur(20px); /* Performance intensive */
+    background-color: rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+.dark .blur-overlay {
+     background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Right Panel Content */
+.right-panel-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+/* Top Right Buttons */
+.top-buttons { display: flex; justify-content: flex-end; gap: 0.75rem; }
+.top-button { background-color: transparent; border: 1px solid rgba(255, 255, 255, 0.5); color: rgba(255, 255, 255, 0.8); padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; transition: all 0.3s ease; cursor: pointer; }
+.top-button:hover { background-color: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.9); color: #ffffff; }
+
+/* Bottom Text */
+.bottom-text h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; color: #ffffff; text-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+.bottom-text p { font-size: 0.875rem; color: rgba(255, 255, 255, 0.8); text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+
+/* Form Styling (Left Panel) */
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem; /* rounded-lg */
+    border: 1px solid var(--light-border);
+    background-color: var(--light-input-bg);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    color: var(--light-text-primary); 
+    font-size: 0.875rem; /* text-sm */
+}
+.dark .form-input {
+    background-color: var(--dark-input-bg);
+    border-color: var(--dark-border);
+    color: var(--dark-text-primary);
+}
+.form-input::placeholder {
+     color: var(--light-text-secondary);
+     opacity: 0.7;
+}
+.dark .form-input::placeholder {
+     color: var(--dark-text-secondary);
+     opacity: 0.7;
+}
+.form-input:focus {
+    outline: none;
+    border-color: var(--light-accent);
+    box-shadow: 0 0 0 2px var(--light-accent / 30%); /* Use theme color for focus ring */
+}
+.dark .form-input:focus {
+     border-color: var(--dark-accent);
+     box-shadow: 0 0 0 2px var(--dark-accent / 30%);
+}
+
+.form-button-pill {
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px; /* rounded-full */
+    font-weight: 600;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    width: 100%;
+    background-color: var(--light-text-primary);
+    color: var(--light-card-bg);
+    cursor: pointer;
+    border: none; /* Ensure no default border */
+}
+.dark .form-button-pill {
+     background-color: var(--dark-text-primary);
+     color: var(--dark-bg);
+}
+ .form-button-pill:hover {
+     transform: translateY(-2px);
+     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+ .dark .form-button-pill:hover {
+     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+ .form-button-pill:active {
+    transform: scale(0.98);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) { /* md breakpoint equivalent */
+    .auth-container {
+        flex-direction: column;
+        min-height: 0;
+        margin: 1rem; 
+        border-radius: 1rem; 
+    }
+    .left-panel, .right-panel {
+        width: 100%;
+        flex-basis: auto;
+    }
+    .right-panel {
+        display: flex; /* Ensure right panel shows on mobile */
+        min-height: 300px; 
+        padding: 2rem 1.5rem;
+    }
+    .left-panel {
+         padding: 2rem 1.5rem;
+    }
+    .bottom-text h3 { font-size: 1.25rem; }
+    .bottom-text p { font-size: 0.875rem; }
+    /* Adjust blob sizes/positions for mobile if needed */
+}

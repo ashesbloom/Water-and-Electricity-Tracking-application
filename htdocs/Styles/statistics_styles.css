@@ -1,0 +1,359 @@
+/* Styles specific to the Statistics page (Scroll Snap Globe) */
+
+/* Base Body Style Override (Handled by html.no-global-scroll now) */
+/* body.stats-page-active { overflow: hidden; } /* REMOVED */
+
+/* Scroll Snap Layout */
+.scroll-container {
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* Add scrollbar hiding styles */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+/* Hide scrollbar visually for Webkit browsers */
+.scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+.scroll-section {
+    scroll-snap-align: start;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    position: relative;
+    overflow: hidden; /* Clip content within section */
+}
+
+/* Globe Section (#globe-section) */
+#globe-section {
+    background-color: #000000; /* Pure black */
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+/* Canvas Container */
+#canvas-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    cursor: grab;
+}
+#canvas-container:active {
+    cursor: grabbing;
+}
+/* Loading Indicator */
+#canvas-container > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9CA3AF; /* gray-400 */
+    font-style: italic;
+    z-index: 1;
+    position: relative;
+    background-color: #000000; /* Match section bg */
+    width: 100%;
+    height: 100%;
+}
+
+
+/* Info Box Styling */
+.info-box {
+    position: absolute;
+    top: calc(4rem + 1rem); /* Position below fixed header (adjust if header height changes) */
+    left: 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem; /* rounded-lg */
+    background-color: rgba(0, 0, 0, 0.8); /* Dark semi-transparent */
+    color: white;
+    z-index: 10;
+    max-width: 300px;
+    pointer-events: none; /* Allow clicks to pass through to globe */
+    line-height: 1.5;
+    min-height: 120px; /* Ensure minimum size */
+    /* Scroll animation applied via class if needed */
+    /* transition: opacity 0.8s ease-out, transform 0.8s ease-out; */
+    /* transition-delay: 0.2s; */
+}
+
+/* Info Box Content Styling */
+.info-box h2 { 
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1.125rem; /* text-lg */
+    margin-bottom: 0.5rem;
+    padding-bottom: 0;
+}
+#info-display .data-label {
+    font-weight: 600;
+    color: #a0aec0; /* gray-500 ish */
+    display: inline-block;
+    min-width: 80px;
+}
+#info-display .location-name {
+    font-weight: 700;
+    font-size: 1.125rem; /* text-lg */
+    margin-bottom: 0.5rem;
+    color: #ffffff;
+}
+#info-display .location-type {
+    font-size: 0.75rem; /* text-xs */
+    color: #cbd5e0; /* gray-400 ish */
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+#info-display .coords {
+    font-size: 0.875rem; /* text-sm */
+    color: #e2e8f0; /* gray-300 ish */
+    margin-top: 0.5rem;
+}
+
+
+/* Blank Section (#map-section-container) */
+#map-section-container {
+    /* Using theme() assumes Tailwind PostCSS processing or equivalent setup */
+    background: linear-gradient(to bottom, #000000 0%, theme('colors.light-bg / 90%') 30%, theme('colors.light-bg') 50%);
+    color: theme('colors.light-text-primary');
+    align-items: center;
+    justify-content: center;
+    padding-top: 4rem; /* Space for header */
+    padding-bottom: 4rem; /* Space for footer */
+}
+.dark #map-section-container {
+    background: linear-gradient(to bottom, #000000 0%, theme('colors.dark-bg / 90%') 30%, theme('colors.dark-bg') 50%);
+    color: theme('colors.dark-text-primary');
+}
+/* Select non-absolute children for content styling if needed */
+#map-section-container > div:not(.absolute) { 
+    /* Styles for the centered content div */
+}
+/* Select absolute children for footer container styling */
+#map-section-container > div.absolute { 
+    /* Styles for the footer container */
+}
+
+
+/* Hover Indicator Styling */
+#hover-indicator {
+    position: fixed; 
+    width: 12px; 
+    height: 12px; 
+    background-color: transparent;
+    border: 2px solid red; 
+    border-radius: 50%; 
+    pointer-events: none;
+    display: none; /* Shown by JS */
+    z-index: 25; 
+    transform: translate(-50%, -50%); /* Center on cursor */
+    mix-blend-mode: difference; /* Helps visibility on different colors */
+}
+
+/* Location Popup Styling */
+#location-popup {
+    position: fixed;
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem; /* rounded-md */
+    box-shadow: theme('boxShadow.lg'); /* Use Tailwind shadow */
+    max-width: 250px;
+    font-size: 0.875rem; /* text-sm */
+    line-height: 1.4;
+    pointer-events: none;
+    z-index: 30;
+    opacity: 0;
+    transform: scale(0.5) translateY(-50%);
+    transform-origin: bottom center;
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+    display: none; /* Controlled by JS adding .visible class */
+    border-width: 1px; 
+    border-style: solid;
+}
+
+/* Theme specific styles for popup using classes added by JS */
+/* Assumes --light-accent-rgb and --dark-accent-rgb are defined globally */
+/* Fallbacks provided */
+#location-popup.light-popup {
+    background-color: rgba(var(--light-accent-rgb, 37, 99, 235), 0.9); 
+    color: #FFFFFF; 
+    border-color: rgba(var(--light-accent-rgb, 37, 99, 235), 0.95); /* Slightly darker/more opaque border */
+}
+#location-popup.dark-popup {
+    background-color: rgba(var(--dark-accent-rgb, 236, 201, 49), 0.9); 
+    color: var(--dark-bg, #111827); /* Use dark background for text contrast */
+    border-color: rgba(var(--dark-accent-rgb, 236, 201, 49), 0.95); 
+}
+
+#location-popup.visible {
+    display: block;
+    opacity: 1;
+    /* Adjusted transform for better positioning above the point */
+    transform: scale(1) translateY(calc(-100% - 15px)) translateX(-50%); 
+}
+
+/* Popup Arrow */
+#location-popup::after {
+    content: '';
+    position: absolute;
+    bottom: -10px; /* Position arrow below the popup */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top-width: 10px;
+    border-top-style: solid;
+}
+#location-popup.light-popup::after {
+    border-top-color: rgba(var(--light-accent-rgb, 37, 99, 235), 0.9); 
+}
+#location-popup.dark-popup::after {
+    border-top-color: rgba(var(--dark-accent-rgb, 236, 201, 49), 0.9); 
+}
+
+
+/* Popup Content Styling */
+#location-popup .data-label {
+    font-weight: 600;
+    display: inline-block;
+    min-width: 45px;
+    opacity: 0.8;
+    color: inherit; /* Inherit color from popup */
+}
+#location-popup .location-name {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+    color: inherit;
+}
+#location-popup .location-type {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+    display: block;
+    opacity: 0.7;
+    color: inherit;
+}
+
+
+#map-section-container {
+    max-width: 950px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+}
+
+#india-tariff-map-container {
+   width: 100%;
+   max-width: 800px;
+   margin: 1rem auto 0 auto;
+   position: relative;
+}
+
+#india-tariff-map svg {
+   display: block;
+   width: 100%;
+   height: auto;
+}
+
+.state {
+   stroke: #6b7280;
+   stroke-width: 0.5px;
+   transition: fill 0.2s ease-in-out, transform 0.1s ease-out, filter 0.2s ease, stroke 0.2s ease, stroke-width 0.1s ease;
+   cursor: pointer;
+}
+.dark .state {
+   stroke: #9ca3af;
+}
+
+.state:hover {
+   stroke-width: 1.5px;
+   stroke: #1f2937;
+   filter: brightness(1.1);
+   transform: translateY(-1px);
+}
+.dark .state:hover {
+    stroke: #f9fafb;
+    filter: brightness(1.2);
+}
+
+#tooltip {
+   position: absolute;
+   background-color: rgba(31, 41, 55, 0.95);
+   color: #f9fafb;
+   padding: 8px 12px;
+   border-radius: 4px;
+   font-size: 0.85rem;
+   pointer-events: none;
+   opacity: 0;
+   transform: scale(0.95);
+   transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+   white-space: nowrap;
+   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+   z-index: 50;
+}
+.dark #tooltip {
+    background-color: rgba(243, 244, 246, 0.95);
+    color: #1f2937;
+}
+#tooltip.visible {
+   opacity: 1;
+   transform: scale(1);
+}
+
+#map-legend {
+   margin-top: 1.5rem;
+   padding-bottom: 0.5rem;
+   font-size: 0.8rem;
+   text-align: center;
+   color: #4B5567;
+}
+.dark #map-legend {
+    color: #9CA3AF;
+}
+.legend-item {
+   display: inline-flex;
+   align-items: center;
+   margin: 0 8px 5px 8px;
+}
+.legend-color-box {
+   width: 15px;
+   height: 15px;
+   margin-right: 5px;
+   border: 1px solid rgba(0,0,0,0.2);
+   flex-shrink: 0;
+}
+.dark .legend-color-box {
+    border-color: rgba(255,255,255,0.2);
+}
+/* --- End Base Map Styles --- */
+
+
+/* === Overrides to Disable Hover Effects on Map Container === */
+#map-section-container:hover {
+   transform: none;
+}
+html:not(.dark) #map-section-container:hover {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+.dark #map-section-container:hover {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+#map-section-container:hover::before,
+#map-section-container:hover::after {
+   animation: none;
+   opacity: 0;
+}
+#map-section-container:hover .mist-background {
+    animation: none;
+    opacity: 0;
+}

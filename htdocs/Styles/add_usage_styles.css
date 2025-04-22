@@ -1,0 +1,131 @@
+/* ================================================== */
+/* Styles specific to the Add Usage page              */
+/* ================================================== */
+
+/* --- Input Card Styling & Hover Effect --- */
+.input-card {
+    /* Base styles are applied via Tailwind in the PHP */
+    /* Add transition for hover effects */
+    transition: transform 0.3s ease, box-shadow 0.4s ease-out, border-color 0.3s ease, opacity 0.4s ease, filter 0.4s ease;
+    /* Base border for smooth transition, color set by dark/light mode below */
+    border: 1px solid theme('colors.light-border');
+}
+
+.dark .input-card {
+     border-color: theme('colors.dark-border'); /* Use Tailwind theme color for dark border */
+}
+
+/* --- Overlay Hover Effect --- */
+
+/* When hovering the wrapper, dim ALL direct child cards */
+#input-cards-wrapper:hover > .input-card {
+    opacity: 0.6;
+    filter: grayscale(30%) blur(1px); /* Example dulling effect */
+}
+
+/* When hovering the wrapper, HIGHLIGHT the specific card being hovered */
+#input-cards-wrapper:hover > .input-card:hover {
+    opacity: 1; /* Restore full opacity */
+    filter: none; /* Remove dulling filter */
+    transform: scale(1.02); /* Slightly larger scale on hover */
+    /* Glowing effect is applied below specifically for dark mode */
+}
+
+/* Apply the glowing hover effect for dark mode specifically on the hovered card */
+.dark #input-cards-wrapper:hover > .input-card:hover {
+    border-color: theme('colors.gold-accent / 70%'); /* Use Tailwind theme color */
+    box-shadow:
+        /* Main Glow (Gold Accent) */
+        0 0 15px 4px theme('colors.gold-accent / 40%'),
+        /* Subtle Elevation */
+        0 8px 20px rgba(0, 0, 0, 0.35);
+}
+/* --- END: Overlay Hover Effect --- */
+
+
+/* --- Section Header Styling --- */
+.section-header {
+    /* Uses flex alignment from HTML */
+    padding-bottom: 0.5rem; /* Add space below header text/icon */
+    border-bottom: 1px solid theme('colors.light-border');
+    margin-bottom: 1.5rem; /* mb-6 from HTML */
+}
+
+.dark .section-header {
+     border-bottom-color: theme('colors.dark-border');
+}
+
+/* --- Form Input Focus Styles --- */
+.form-input,
+.form-textarea {
+     /* Add transitions for focus effects */
+     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    /* Tailwind handles the focus:ring */
+    /* Add subtle scale and shadow for extra visual feedback */
+    transform: scale(1.01);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    /* Ensure border color changes smoothly if not handled by ring */
+    /* border-color: theme('colors.light-accent'); */ /* Example if needed */
+}
+
+.dark .form-input:focus,
+.dark .form-textarea:focus {
+     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+     /* border-color: theme('colors.gold-accent'); */ /* Example if needed */
+}
+
+/* --- Form Button Interaction --- */
+.form-button {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+.form-button:active {
+    transform: scale(0.98); /* Slightly shrink on click */
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+
+/* --- Hide Spin Buttons on Number Inputs --- */
+/* Apply to all number inputs within this page context if desired */
+.input-card input[type=number]::-webkit-outer-spin-button,
+.input-card input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input-card input[type=number] {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+/* --- Scroll Animation Adjustments (Optional) --- */
+/* These might already be defined in homepage_styling.css or partials_styling.css */
+/* You can override or enhance them here if needed for this specific page */
+
+/* Example: Make scroll animation slightly longer for input cards */
+
+.input-card.scroll-animate {
+    transition-property: opacity, transform; /* Ensure properties match transition */
+    transition-duration: 0.8s; /* Make transition longer */
+    transition-timing-function: ease-out;
+}
+
+
+/* Example: Adjust initial position */
+
+.scroll-animate-init {
+    opacity: 0;
+    transform: translateY(40px);
+}
+
+
+/* Example: Adjust stagger delay (applied via class in HTML) */
+
+.scroll-animate-stagger {
+     transition-delay: 0.2s;
+}
+
+
+
