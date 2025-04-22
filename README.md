@@ -34,6 +34,7 @@ GridSync allows users to register, log in, and input their daily or periodic wat
     * Animated footer graphic.
 
 ## Project Structure
+```
 /Water-and-Electricity-Tracking-application
 ├── /config
 │   ├── database.php     # Database connection setup
@@ -83,7 +84,7 @@ GridSync allows users to register, log in, and input their daily or periodic wat
 ├── tailwind.config.js   # Tailwind CSS configuration (if used)
 ├── README.md            # This file
 └── # Other config files (postcss.config.js, etc.)
-
+```
 ## Setup & Installation
 
 1.  **Clone Repository:** `git clone https://github.com/ashesbloom/Water-and-Electricity-Tracking-application.git`
