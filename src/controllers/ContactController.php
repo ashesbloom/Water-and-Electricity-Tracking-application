@@ -21,7 +21,7 @@ class ContactController {
         $smtpHost = 'smtp.gmail.com';       
         $smtpPort = 587;                     
         $smtpUsername = 'mongodbassociate@gmail.com'; 
-        $smtpPassword = 'fjwl tfhk brui gidi'; 
+        $smtpPassword = 'yourpasswordhere'; 
         $smtpEncryption = PHPMailer::ENCRYPTION_STARTTLS;  //it can be both TLS or SSL depending upon the port we are using
         $emailFromName = 'GridSync Contact Form';     
         $emailToAddress = 'mayankpandeydk123@gmail.com'; 
