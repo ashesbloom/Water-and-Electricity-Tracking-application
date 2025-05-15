@@ -18,7 +18,6 @@ if (!isset($_SESSION["logged_in"]) || $_SESSION["logged_in"] !== true) {
         exit;
     }
 }
-
 // Define base path if not already defined
 if (!defined('BASE_URL_PATH')) {
     define('BASE_URL_PATH', '/tracker');
@@ -26,6 +25,7 @@ if (!defined('BASE_URL_PATH')) {
 
 $username = $_SESSION['username'] ?? 'User';
 $currentPage = 'chatbot';
+$userId = $_SESSION['user_id'] ?? null;
 
 ?>
 <!DOCTYPE html>
@@ -88,6 +88,9 @@ $currentPage = 'chatbot';
                 }
             }
         }
+    </script>
+    <script>
+            const USER_ID = <?php echo json_encode($userId); ?>; // Pass PHP user ID to JS
     </script>
     <link rel="stylesheet" href="<?php echo BASE_URL_PATH; ?>/Styles/partials_styling.css">
     <link rel="stylesheet" href="<?php echo BASE_URL_PATH; ?>/Styles/homepage_styling.css">
@@ -328,10 +331,6 @@ $currentPage = 'chatbot';
             </form>
         </div>
     </main>
-
-    <?php
-      // Footer removed for cleaner chat interface
-    ?>
 
     <script src="<?php echo BASE_URL_PATH; ?>/JavaScripts/dynamic.js" defer></script>
     <script src="<?php echo BASE_URL_PATH; ?>/JavaScripts/chatbot_script.js" defer></script>

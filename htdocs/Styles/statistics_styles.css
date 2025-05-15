@@ -80,13 +80,10 @@
     pointer-events: none; /* Allow clicks to pass through to globe */
     line-height: 1.5;
     min-height: 120px; /* Ensure minimum size */
-    /* Scroll animation applied via class if needed */
-    /* transition: opacity 0.8s ease-out, transform 0.8s ease-out; */
-    /* transition-delay: 0.2s; */
 }
 
 /* Info Box Content Styling */
-.info-box h2 { 
+.info-box h2 {
     color: #ffffff;
     font-weight: 600;
     font-size: 1.125rem; /* text-lg */
@@ -119,41 +116,86 @@
 }
 
 
-/* Blank Section (#map-section-container) */
+/* Map Section (#map-section-container) */
 #map-section-container {
     /* Using theme() assumes Tailwind PostCSS processing or equivalent setup */
-    background: linear-gradient(to bottom, #000000 0%, theme('colors.light-bg / 90%') 30%, theme('colors.light-bg') 50%);
-    color: theme('colors.light-text-primary');
-    align-items: center;
-    justify-content: center;
+    /* Define CSS variables based on Tailwind config for fallback/direct use */
+    --light-bg: #F3F4F6;
+    --light-text-primary: #1F2937;
+    --dark-bg: #111827;
+    --dark-text-primary: #F9FAFB;
+
+    background: linear-gradient(to bottom, #000000 0%, var(--light-bg) 30%, var(--light-bg) 50%);
+    color: var(--light-text-primary);
+    align-items: center; /* Center content horizontally */
+    /* justify-content: center; /* Center content vertically (removed to allow natural flow) */
     padding-top: 4rem; /* Space for header */
     padding-bottom: 4rem; /* Space for footer */
+    /* Added flex-col for proper layout */
+    display: flex;
+    flex-direction: column;
 }
 .dark #map-section-container {
-    background: linear-gradient(to bottom, #000000 0%, theme('colors.dark-bg / 90%') 30%, theme('colors.dark-bg') 50%);
-    color: theme('colors.dark-text-primary');
+    background: linear-gradient(to bottom, #000000 0%, var(--dark-bg) 30%, var(--dark-bg) 50%);
+    color: var(--dark-text-primary);
 }
-/* Select non-absolute children for content styling if needed */
-#map-section-container > div:not(.absolute) { 
-    /* Styles for the centered content div */
+
+/* Map Toggle Button Styles */
+.map-toggle-button {
+    padding: 0.5rem 1.25rem; /* Adjusted padding */
+    border-radius: 9999px; /* rounded-full */
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 600; /* font-semibold */
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    /* Default Inactive State (Light) */
+    background-color: #E5E7EB; /* gray-200 */
+    color: #4B5567; /* gray-600 */
+    border-color: #D1D5DB; /* gray-300 */
 }
-/* Select absolute children for footer container styling */
-#map-section-container > div.absolute { 
-    /* Styles for the footer container */
+/* Inactive State (Dark) */
+.dark .map-toggle-button {
+    background-color: #374151; /* gray-700 */
+    color: #D1D5DB; /* gray-300 */
+    border-color: #4B5563; /* gray-600 */
+}
+/* Hover State (Inactive) */
+.map-toggle-button:not(.active):hover {
+    background-color: #D1D5DB; /* gray-300 */
+    border-color: #9CA3AF; /* gray-400 */
+}
+.dark .map-toggle-button:not(.active):hover {
+    background-color: #4B5563; /* gray-600 */
+    border-color: #6B7280; /* gray-500 */
+}
+/* Active State (Light) - Using CSS Variables defined in PHP/Tailwind */
+.map-toggle-button.active {
+    background-color: var(--light-accent, #2563EB); /* Use light accent */
+    color: white;
+    border-color: var(--light-accent-hover, #1D4ED8); /* Use darker accent */
+    box-shadow: 0 2px 5px rgba(59, 130, 246, 0.3); /* Subtle blue shadow */
+}
+/* Active State (Dark) - Using CSS Variables defined in PHP/Tailwind */
+.dark .map-toggle-button.active {
+    background-color: var(--gold-accent, #ecc931); /* Use gold accent */
+    color: #111827; /* Use dark background for text */
+    border-color: #ca8a04; /* Darker gold */
+    box-shadow: 0 2px 5px rgba(236, 201, 49, 0.3); /* Subtle gold shadow */
 }
 
 
 /* Hover Indicator Styling */
 #hover-indicator {
-    position: fixed; 
-    width: 12px; 
-    height: 12px; 
+    position: fixed;
+    width: 12px;
+    height: 12px;
     background-color: transparent;
-    border: 2px solid red; 
-    border-radius: 50%; 
+    border: 2px solid red;
+    border-radius: 50%;
     pointer-events: none;
     display: none; /* Shown by JS */
-    z-index: 25; 
+    z-index: 25;
     transform: translate(-50%, -50%); /* Center on cursor */
     mix-blend-mode: difference; /* Helps visibility on different colors */
 }
@@ -163,7 +205,7 @@
     position: fixed;
     padding: 0.75rem 1rem;
     border-radius: 0.375rem; /* rounded-md */
-    box-shadow: theme('boxShadow.lg'); /* Use Tailwind shadow */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Tailwind shadow-lg */
     max-width: 250px;
     font-size: 0.875rem; /* text-sm */
     line-height: 1.4;
@@ -174,29 +216,26 @@
     transform-origin: bottom center;
     transition: opacity 0.3s ease-out, transform 0.3s ease-out;
     display: none; /* Controlled by JS adding .visible class */
-    border-width: 1px; 
+    border-width: 1px;
     border-style: solid;
 }
 
 /* Theme specific styles for popup using classes added by JS */
-/* Assumes --light-accent-rgb and --dark-accent-rgb are defined globally */
-/* Fallbacks provided */
 #location-popup.light-popup {
-    background-color: rgba(var(--light-accent-rgb, 37, 99, 235), 0.9); 
-    color: #FFFFFF; 
-    border-color: rgba(var(--light-accent-rgb, 37, 99, 235), 0.95); /* Slightly darker/more opaque border */
+    background-color: rgba(var(--light-accent-rgb, 37, 99, 235), 0.9);
+    color: #FFFFFF;
+    border-color: rgba(var(--light-accent-rgb, 37, 99, 235), 0.95);
 }
 #location-popup.dark-popup {
-    background-color: rgba(var(--dark-accent-rgb, 236, 201, 49), 0.9); 
-    color: var(--dark-bg, #111827); /* Use dark background for text contrast */
-    border-color: rgba(var(--dark-accent-rgb, 236, 201, 49), 0.95); 
+    background-color: rgba(var(--dark-accent-rgb, 236, 201, 49), 0.9);
+    color: var(--dark-bg, #111827);
+    border-color: rgba(var(--dark-accent-rgb, 236, 201, 49), 0.95);
 }
 
 #location-popup.visible {
     display: block;
     opacity: 1;
-    /* Adjusted transform for better positioning above the point */
-    transform: scale(1) translateY(calc(-100% - 15px)) translateX(-50%); 
+    transform: scale(1) translateY(calc(-100% - 15px)) translateX(-50%);
 }
 
 /* Popup Arrow */
@@ -214,126 +253,117 @@
     border-top-style: solid;
 }
 #location-popup.light-popup::after {
-    border-top-color: rgba(var(--light-accent-rgb, 37, 99, 235), 0.9); 
+    border-top-color: rgba(var(--light-accent-rgb, 37, 99, 235), 0.9);
 }
 #location-popup.dark-popup::after {
-    border-top-color: rgba(var(--dark-accent-rgb, 236, 201, 49), 0.9); 
+    border-top-color: rgba(var(--dark-accent-rgb, 236, 201, 49), 0.9);
 }
 
 
 /* Popup Content Styling */
 #location-popup .data-label {
-    font-weight: 600;
-    display: inline-block;
-    min-width: 45px;
-    opacity: 0.8;
-    color: inherit; /* Inherit color from popup */
+    font-weight: 600; display: inline-block; min-width: 45px; opacity: 0.8; color: inherit;
 }
 #location-popup .location-name {
-    font-weight: 700;
-    font-size: 1rem;
-    margin-bottom: 0.25rem;
-    color: inherit;
+    font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; color: inherit;
 }
 #location-popup .location-type {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    margin-bottom: 0.25rem;
-    display: block;
-    opacity: 0.7;
-    color: inherit;
+    font-size: 0.7rem; text-transform: uppercase; margin-bottom: 0.25rem; display: block; opacity: 0.7; color: inherit;
 }
 
-
+/* Map Specific Container Styles */
 #map-section-container {
-    max-width: 950px;
+    max-width: 950px; /* Limit width of the map section */
     margin-left: auto;
     margin-right: auto;
-    position: relative;
+    position: relative; /* Needed for absolute positioning inside if any */
 }
 
 #india-tariff-map-container {
-   width: 100%;
-   max-width: 800px;
-   margin: 1rem auto 0 auto;
-   position: relative;
+   width: 50%;
+   max-width: 800px; /* Limit map width */
+   margin: 0 auto; /* Center map within its container */
+   position: relative; /* Context for tooltip */
 }
 
 #india-tariff-map svg {
    display: block;
    width: 100%;
-   height: auto;
+   height: auto; /* Maintain aspect ratio */
 }
 
+/* D3 Map State Styles */
 .state {
-   stroke: #6b7280;
+   stroke: #6b7280; /* Default light mode stroke */
    stroke-width: 0.5px;
    transition: fill 0.2s ease-in-out, transform 0.1s ease-out, filter 0.2s ease, stroke 0.2s ease, stroke-width 0.1s ease;
    cursor: pointer;
 }
 .dark .state {
-   stroke: #9ca3af;
+   stroke: #9ca3af; /* Dark mode stroke */
 }
 
 .state:hover {
    stroke-width: 1.5px;
-   stroke: #1f2937;
+   stroke: #1f2937; /* Darker stroke on hover (light mode) */
    filter: brightness(1.1);
-   transform: translateY(-1px);
+   transform: translateY(-1px); /* Slight lift effect */
 }
 .dark .state:hover {
-    stroke: #f9fafb;
+    stroke: #f9fafb; /* Lighter stroke on hover (dark mode) */
     filter: brightness(1.2);
 }
 
+/* D3 Tooltip Styles */
 #tooltip {
    position: absolute;
-   background-color: rgba(31, 41, 55, 0.95);
-   color: #f9fafb;
+   background-color: rgba(31, 41, 55, 0.95); /* Dark background */
+   color: #f9fafb; /* Light text */
    padding: 8px 12px;
    border-radius: 4px;
    font-size: 0.85rem;
-   pointer-events: none;
+   pointer-events: none; /* Don't block mouse events */
    opacity: 0;
    transform: scale(0.95);
    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
    white-space: nowrap;
    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-   z-index: 50;
+   z-index: 50; /* Ensure tooltip is above map */
 }
 .dark #tooltip {
-    background-color: rgba(243, 244, 246, 0.95);
-    color: #1f2937;
+    background-color: rgba(243, 244, 246, 0.95); /* Light background */
+    color: #1f2937; /* Dark text */
 }
 #tooltip.visible {
    opacity: 1;
    transform: scale(1);
 }
 
+/* D3 Map Legend Styles */
 #map-legend {
    margin-top: 1.5rem;
    padding-bottom: 0.5rem;
    font-size: 0.8rem;
    text-align: center;
-   color: #4B5567;
+   color: #4B5567; /* Default light mode text */
 }
 .dark #map-legend {
-    color: #9CA3AF;
+    color: #9CA3AF; /* Dark mode text */
 }
 .legend-item {
    display: inline-flex;
    align-items: center;
-   margin: 0 8px 5px 8px;
+   margin: 0 8px 5px 8px; /* Spacing around legend items */
 }
 .legend-color-box {
    width: 15px;
    height: 15px;
    margin-right: 5px;
-   border: 1px solid rgba(0,0,0,0.2);
-   flex-shrink: 0;
+   border: 1px solid rgba(0,0,0,0.2); /* Light mode border */
+   flex-shrink: 0; /* Prevent shrinking */
 }
 .dark .legend-color-box {
-    border-color: rgba(255,255,255,0.2);
+    border-color: rgba(255,255,255,0.2); /* Dark mode border */
 }
 /* --- End Base Map Styles --- */
 
@@ -357,3 +387,4 @@ html:not(.dark) #map-section-container:hover {
     animation: none;
     opacity: 0;
 }
+

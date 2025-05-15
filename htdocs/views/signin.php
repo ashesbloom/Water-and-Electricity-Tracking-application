@@ -8,7 +8,6 @@ if (isset($_SESSION["logged_in"]) && $_SESSION["logged_in"] === true) {
     exit;
 }
 
-// Define base path if not already defined
 if (!defined('BASE_URL_PATH')) {
     define('BASE_URL_PATH', '/tracker'); 
 }
@@ -18,6 +17,7 @@ $message = $_SESSION['message'] ?? null;
 $message_type = 'neutral'; 
 
 if ($message) {
+
     // Determine message type (simple check for keywords)
     if (stripos($message, 'success') !== false || stripos($message, 'created') !== false) {
         $message_type = 'success';
@@ -34,7 +34,7 @@ if (isset($_GET['logged_out'])) {
 }
 
 // Construct the absolute form action URL
-$formAction = rtrim(BASE_URL_PATH, '/') . '/login';
+$formAction = rtrim(BASE_URL_PATH, '/') . '/auth/login';
 
 ?>
 <!DOCTYPE html>
@@ -146,15 +146,11 @@ $formAction = rtrim(BASE_URL_PATH, '/') . '/login';
                         <input type="password" id="password" name="password" required placeholder="Password" autocomplete="current-password" class="form-input">
                     </div>
 
-                    <div class="text-right mb-6">
-                        <a href="#" class="text-xs font-medium text-light-accent dark:text-dark-accent hover:underline">Forgot Password?</a>
-                    </div>
-
                     <button type="submit" class="form-button-pill">Log In</button>
                     
                     <p class="mt-6 text-center text-xs text-light-text-secondary dark:text-dark-text-secondary">
                         Don't have an account?
-                        <a href="<?php echo BASE_URL_PATH; ?>/register" class="font-semibold text-light-accent dark:text-dark-accent hover:underline">Sign up</a>
+                        <a href="<?php echo BASE_URL_PATH; ?>/auth/register" class="font-semibold text-light-accent dark:text-dark-accent hover:underline">Sign up</a>
                     </p>
                 </form>
             </div>
@@ -172,7 +168,7 @@ $formAction = rtrim(BASE_URL_PATH, '/') . '/login';
 
                 <div class="right-panel-content">
                     <div class="top-buttons">
-                        <a href="<?php echo BASE_URL_PATH; ?>/register" class="top-button">Sign Up</a>
+                        <a href="<?php echo BASE_URL_PATH; ?>/auth/register" class="top-button">Sign Up</a>
                     </div>
                     <div class="bottom-text mt-auto">
                         <h3>Track your consumption, save resources.</h3>

@@ -259,7 +259,7 @@ $formAction = rtrim(BASE_URL_PATH, '/') . '/submit-contact';
                     <div class="space-y-4 text-sm text-light-text-secondary dark:text-dark-text-secondary">
                         <p>
                             <strong class="font-medium text-light-text-primary dark:text-white">Address:</strong><br>
-                            123 GridSync Lane, Ludhiana, Punjab, 141001, India (Placeholder)
+                            123 GridSync Lane, Ludhiana, Punjab, 141001, India
                         </p>
                         <p>
                             <strong class="font-medium text-light-text-primary dark:text-white">Email:</strong><br>
@@ -268,7 +268,7 @@ $formAction = rtrim(BASE_URL_PATH, '/') . '/submit-contact';
                         </p>
                         <p>
                             <strong class="font-medium text-light-text-primary dark:text-white">Phone:</strong><br>
-                            +91 123 456 7890 (Placeholder)
+                            +91 123 456 7890
                         </p>
                         <p class="text-xs italic mt-6">
                             Please use the form for specific inquiries or feedback.

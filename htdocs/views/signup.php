@@ -30,7 +30,7 @@ if ($message) {
 // --- END CORRECTED MESSAGE HANDLING ---
 
 // Construct the absolute form action URL
-$formAction = rtrim(BASE_URL_PATH, '/') . '/register'; // Action points to the register route
+$formAction = rtrim(BASE_URL_PATH, '/') . '/auth/register'; // Action points to the register route
 
 ?>
 <!DOCTYPE html>
@@ -144,7 +144,7 @@ $formAction = rtrim(BASE_URL_PATH, '/') . '/register'; // Action points to the r
 
                     <p class="mt-6 text-center text-xs text-light-text-secondary dark:text-dark-text-secondary">
                         Already have an account?
-                        <a href="<?php echo BASE_URL_PATH; ?>/login" class="font-semibold text-light-accent dark:text-dark-accent hover:underline">Sign in</a>
+                        <a href="<?php echo BASE_URL_PATH; ?>/auth/login" class="font-semibold text-light-accent dark:text-dark-accent hover:underline">Sign in</a>
                     </p>
                 </form> 
              </div> 
@@ -161,7 +161,7 @@ $formAction = rtrim(BASE_URL_PATH, '/') . '/register'; // Action points to the r
 
                 <div class="right-panel-content">
                     <div class="top-buttons">
-                        <a href="<?php echo BASE_URL_PATH; ?>/login" class="top-button">Sign In</a>
+                        <a href="<?php echo BASE_URL_PATH; ?>/auth/login" class="top-button">Sign In</a>
                     </div>
                     <div class="bottom-text mt-auto">
                         <h3>Track your consumption, save resources.</h3>

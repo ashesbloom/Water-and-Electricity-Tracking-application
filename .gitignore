@@ -1,2 +1,7 @@
 /node_modules
 /package-lock.json
+/vendor
+/ai_backend/node_modules
+/ai_backend/package-lock.json
+/ai_backend/.env
+/htdocs/.htaccess

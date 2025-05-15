@@ -1,120 +1,153 @@
 <?php
-// htdocs/index.php
+// Start session at the very beginning
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-// --- Autoload Composer Dependencies ---
-// Still needed for other potential dependencies like NewsAPI
+// Set default timezone
+date_default_timezone_set('Asia/Kolkata');
+
+// --- Configuration ---
+define('BASE_URL_PATH', '/tracker'); // Adjust if needed
+define('BASE_PATH', dirname(__DIR__));
+
+// --- PHPMailer (Use statements needed for type hinting if used, logic is in Controller) ---
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\SMTP;
+
+// Include Composer's autoloader
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// --- Removed Gemini related use statements ---
+// --- Includes ---
+require_once __DIR__ . '/../config/database.php'; // Assuming $pdo is created here
+require_once __DIR__ . '/../src/controllers/AuthController.php'; // Assumes AuthController defines the auth handling functions
+require_once __DIR__ . '/../src/controllers/UsageController.php';
+require_once __DIR__ . '/../src/controllers/ContactController.php'; // Include the new ContactController
 
-session_start();
-
-// --- Configuration and Setup ---
-define('BASE_PATH', dirname(__DIR__));
-define('VIEW_PATH', BASE_PATH . '/htdocs/views/');
-define('BASE_URL_PATH', '/tracker'); // Adjust if your base path is different
-
-// --- REMOVED GEMINI_API_KEY constant ---
-
-// Include necessary files
-require_once BASE_PATH . '/config/database.php'; // $pdo is available here
-require_once BASE_PATH . '/src/controllers/AuthController.php'; // Contains redirectWithProfileMessage
-require_once BASE_PATH . '/src/controllers/UsageController.php'; // May use redirect functions
-
-// --- Utility Functions ---
-// Ensure the unified flash message function is defined before the switch statement
-if (!function_exists('redirectWithFlashMessage')) {
-    function redirectWithFlashMessage($routePath, $message, $type = 'info') {
-        $baseUrl = defined('BASE_URL_PATH') ? rtrim(BASE_URL_PATH, '/') : '';
-        $location = $baseUrl . '/' . ltrim($routePath, '/');
-        $_SESSION['flash_message'] = $message;
-        $_SESSION['flash_message_type'] = $type;
-        header("Location: " . $location);
-        exit;
-    }
-}
-// Note: redirectWithProfileMessage is defined in AuthController.php, which is included above.
-
-// --- Basic Routing ---
-// Get the request path relative to the base URL path
-$rawPath = $_SERVER['PATH_INFO'] ?? ($_GET['route'] ?? '/');
-$basePathUrl = defined('BASE_URL_PATH') ? BASE_URL_PATH : '';
-if ($basePathUrl && strpos($rawPath, $basePathUrl) === 0) {
-    $requestPath = substr($rawPath, strlen($basePathUrl));
+// --- Routing ---
+$requestUri = $_SERVER['REQUEST_URI'];
+$basePathLength = strlen(BASE_URL_PATH);
+if (substr($requestUri, 0, $basePathLength) === BASE_URL_PATH) {
+    $route = substr($requestUri, $basePathLength);
 } else {
-    $requestPath = $rawPath;
+    $route = $requestUri;
 }
-$requestPath = trim($requestPath, '/');
+$route = strtok($route, '?'); // Remove query string
 
+if (empty($route) || $route === '/') {
+    $route = '/homepage';
+}
 
-// --- Route Definitions ---
-switch ($requestPath) {
-    // --- Authentication Routes ---
-    case 'register':
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') { handleSignUp($pdo); } else { include VIEW_PATH . 'signup.php'; }
+// --- View/API Directories ---
+$viewDir = __DIR__ . '/views/';
+$apiDir = __DIR__ . '/api/';
+
+// --- Route requests ---
+switch ($route) {
+    // --- Page Routes ---
+    case '/homepage':
+        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_URL_PATH . '/signin'); exit(); }
+        include($viewDir . 'homepage.php');
         break;
-    case 'login':
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') { handleSignIn($pdo); } else { include VIEW_PATH . 'signin.php'; }
+    case '/signin':
+        if (isset($_SESSION['user_id'])) { header('Location: ' . BASE_URL_PATH . '/homepage'); exit(); }
+        include($viewDir . 'signin.php');
         break;
-    case 'logout':
-        handleLogout(); break;
-
-    // --- Protected Routes ---
-    case '': case 'homepage': case 'dashboard':
-        if (!isset($_SESSION["logged_in"]) || $_SESSION["logged_in"] !== true) { redirectWithFlashMessage('/login', 'Please log in.', 'error'); exit; }
-        include VIEW_PATH . 'homepage.php'; break;
-    case 'add-usage':
-        if (!isset($_SESSION["logged_in"]) || $_SESSION["logged_in"] !== true) { redirectWithFlashMessage('/login', 'Please log in to add usage.', 'error'); exit; }
-        include VIEW_PATH . 'add_usage.php'; break;
-    case 'save-usage':
-        if (!isset($_SESSION["logged_in"]) || $_SESSION["logged_in"] !== true) { redirectWithFlashMessage('/login', 'Authentication required.', 'error'); exit; }
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') { handleSaveUsage($pdo); } else { header("Location: " . rtrim(BASE_URL_PATH, '/') . '/add-usage'); exit; }
+    case '/signup':
+         if (isset($_SESSION['user_id'])) { header('Location: ' . BASE_URL_PATH . '/homepage'); exit(); }
+        include($viewDir . 'signup.php');
         break;
-    case 'statistics':
-        if (!isset($_SESSION["logged_in"]) || $_SESSION["logged_in"] !== true) { redirectWithFlashMessage('/login', 'Please log in to view statistics.', 'error'); exit; }
-        include VIEW_PATH . 'statistics.php'; break;
-     case 'profile':
-         if (!isset($_SESSION["logged_in"]) || $_SESSION["logged_in"] !== true) { redirectWithFlashMessage('/login', 'Please log in to view profile.', 'error'); exit; }
-         if ($_SERVER['REQUEST_METHOD'] === 'GET') { include VIEW_PATH . 'profile.php'; } else { header("Location: " . rtrim(BASE_URL_PATH, '/') . '/profile'); exit; }
-         break;
-    case 'update-profile-picture':
-         if (!isset($_SESSION["logged_in"]) || $_SESSION["logged_in"] !== true) { redirectWithProfileMessage('/profile', 'Authentication required.'); exit; }
-         if ($_SERVER['REQUEST_METHOD'] === 'POST') { handleUpdateProfilePicture($pdo); } else { header("Location: " . rtrim(BASE_URL_PATH, '/') . '/profile'); exit; }
-         break;
-    case 'update-username':
-         if (!isset($_SESSION["logged_in"]) || $_SESSION["logged_in"] !== true) { redirectWithProfileMessage('/profile', 'Authentication required.'); exit; }
-         if ($_SERVER['REQUEST_METHOD'] === 'POST') { handleUpdateUsername($pdo); } else { header("Location: " . rtrim(BASE_URL_PATH, '/') . '/profile'); exit; }
-         break;
-    case 'update-password':
-         if (!isset($_SESSION["logged_in"]) || $_SESSION["logged_in"] !== true) { redirectWithProfileMessage('/profile', 'Authentication required.'); exit; }
-         if ($_SERVER['REQUEST_METHOD'] === 'POST') { handleUpdatePassword($pdo); } else { header("Location: " . rtrim(BASE_URL_PATH, '/') . '/profile'); exit; }
-         break;
-    case 'news':
-        include VIEW_PATH . 'news.php'; break;
-    case 'contact':
-        include VIEW_PATH . 'contact.php'; break;
-    case 'submit-contact':
-         if ($_SERVER['REQUEST_METHOD'] === 'POST') { $_SESSION['contact_message'] = 'Submission received (backend not fully implemented).'; header("Location: " . rtrim(BASE_URL_PATH, '/') . '/contact'); exit; }
-         else { header("Location: " . rtrim(BASE_URL_PATH, '/') . '/contact'); exit; }
-         break;
-    case 'chatbot':
-        if (!isset($_SESSION["logged_in"]) || $_SESSION["logged_in"] !== true) { redirectWithFlashMessage('/login', 'Please log in to use the AI Chatbot.', 'error'); exit; }
-        include VIEW_PATH . 'chatbot.php'; break;
+    case '/profile':
+        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_URL_PATH . '/signin'); exit(); }
+        include($viewDir . 'profile.php');
+        break;
+    case '/statistics':
+         if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_URL_PATH . '/signin'); exit(); }
+        include($viewDir . 'Statistics.php');
+        break;
+    case '/add-usage':
+         if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_URL_PATH . '/signin'); exit(); }
+        include($viewDir . 'add_usage.php');
+        break;
+    case '/contact':
+        include($viewDir . 'contact.php');
+        break;
+    case '/news':
+        include($viewDir . 'news.php');
+        break;
+    case '/chatbot':
+         if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_URL_PATH . '/signin'); exit(); }
+        include($viewDir . 'chatbot.php');
+        break;
 
-    // --- REMOVED /api/chat route handler ---
-    // The Node.js server now handles requests to /api/chat on its port (e.g., 3000)
+    // --- Detail Page Routes ---
+    case '/details/electricity':
+        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_URL_PATH . '/signin'); exit(); }
+        include($viewDir . 'electTodayUse.php');
+        break;
+    case '/details/water':
+        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_URL_PATH . '/signin'); exit(); }
+        include($viewDir . 'waterTodayUse.php');
+        break;
 
-    // --- Default: Not Found ---
+    // --- API Routes ---
+    case '/api/getElectTodayUse': include($apiDir . 'getElectTodayUse.php'); break;
+    case '/api/getWaterTodayUse': include($apiDir . 'getWaterTodayUse.php'); break;
+    case '/api/historicalWater': include($apiDir . 'getHistoricalWater.php'); break;
+    case '/api/usageOverview': include($apiDir . 'getUsageOverview.php'); break;
+    case '/api/chatbotData':
+        if (!class_exists('UsageController')) { http_response_code(500); echo json_encode(['error' => 'Server configuration error: UsageController not found.']); exit; }
+        include($apiDir . 'getChatbotData.php');
+        break;
+
+    // --- Action Routes ---
+    case '/auth/login':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') { handleSignIn($pdo); } // Assumes function exists in AuthController.php
+        else { header('Location: ' . BASE_URL_PATH . '/signin'); exit(); }
+        break;
+    case '/auth/register':
+       if ($_SERVER['REQUEST_METHOD'] === 'POST') { handleSignUp($pdo); } // Assumes function exists in AuthController.php
+       else { header('Location: ' . BASE_URL_PATH . '/signup'); exit(); }
+       break;
+    case '/auth/logout':
+         handleLogout(); // Assumes function exists in AuthController.php
+         exit();
+        break;
+    // Assuming profile update functions are also in AuthController.php or similar
+    case '/update-profile-picture':
+         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) { handleUpdateProfilePicture($pdo); }
+         else { header('Location: ' . BASE_URL_PATH . (isset($_SESSION['user_id']) ? '/profile' : '/signin')); exit(); }
+         break;
+    case '/update-username':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) { handleUpdateUsername($pdo); }
+        else { header('Location: ' . BASE_URL_PATH . (isset($_SESSION['user_id']) ? '/profile' : '/signin')); exit(); }
+        break;
+    case '/update-password':
+         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) { handleUpdatePassword($pdo); }
+         else { header('Location: ' . BASE_URL_PATH . (isset($_SESSION['user_id']) ? '/profile' : '/signin')); exit(); }
+         break;
+    // Contact form submission route
+    case '/submit-contact':
+         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+             $contactController = new ContactController(); // Instantiate the new controller
+             $contactController->submitForm(); // Call the method in the controller
+         }
+         else {
+            header('Location: ' . BASE_URL_PATH . '/contact');
+            exit();
+         }
+         break;
+
+    // --- Default: 404 Not Found ---
     default:
         http_response_code(404);
-        if (strpos($requestPath, '.') !== false && file_exists(__DIR__ . '/' . $requestPath)) {
-             echo "404 Not Found: Resource " . htmlspecialchars($requestPath) . " cannot be served directly.";
-        } else {
-            echo "404 Page Not Found: The requested path '/" . htmlspecialchars($requestPath) . "' was not found.";
-        }
+        // Simple 404 page
+        echo "<!DOCTYPE html><html><head><title>404 Not Found</title></head><body>";
+        echo "<h1>404 Page Not Found</h1>";
+        echo "<p>The requested route '<code>" . htmlspecialchars($route ?? 'Unknown') . "</code>' was not found.</p>";
+        echo "<p><a href='" . BASE_URL_PATH . "/homepage'>Go to Homepage</a></p>";
+        echo "</body></html>";
         break;
 }
-
-// --- Utility function definition remains ---
-// (redirectWithFlashMessage function is defined earlier)
 ?>

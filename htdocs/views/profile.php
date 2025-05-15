@@ -47,7 +47,7 @@ if ($profile_message) {
 // Define form actions
 $updatePictureAction = rtrim(BASE_URL_PATH, '/') . '/update-profile-picture';
 $updateUsernameAction = rtrim(BASE_URL_PATH, '/') . '/update-username';
-$updatePasswordAction = rtrim(BASE_URL_PATH, '/') . '/update-password';
+$updatePasswordAction = rtrim(BASE_URL_PATH, '/') . '/profile/update/password';
 
 ?>
 <!DOCTYPE html>

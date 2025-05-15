@@ -65,7 +65,7 @@ $inactiveClasses = 'text-light-text-secondary hover:text-light-accent dark:text-
             
             <hr class="border-light-border dark:border-gray-600 my-1">
             
-            <a href="<?php echo BASE_URL_PATH; ?>/logout"
+            <a href="<?php echo BASE_URL_PATH; ?>/auth/logout"
                 class="block w-full text-left px-4 py-2 text-sm text-light-text-secondary hover:bg-light-accent hover:text-white dark:text-gray-200 dark:hover:bg-gold-accent dark:hover:text-gray-900 transition-colors duration-150 rounded-b-lg">Log Out</a>
         </div>
     </div>
