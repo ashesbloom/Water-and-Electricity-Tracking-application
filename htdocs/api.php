@@ -3,7 +3,7 @@
 // IMPORTANT: Replace with your actual Google AI Studio API Key
 // NEVER hardcode API keys directly in production code. 
 // Use environment variables or secure configuration methods.
-$apiKey = 'AIzaSyDn6_bpYaabGtzHoDUmv5QjF6pz8bvZ_I0'; 
+$apiKey = ''; 
 
 // Gemini API endpoint (use the appropriate model)
 $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' . $apiKey;
