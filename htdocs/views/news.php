@@ -1,6 +1,6 @@
 <?php
 // htdocs/views/news.php
-
+//views and styles are handled by @katkarpranav2004
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 use jcobhams\NewsApi\NewsApi;
